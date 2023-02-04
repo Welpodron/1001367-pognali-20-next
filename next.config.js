@@ -16,6 +16,7 @@ const nextConfig = {
   assetPrefix: assetPrefix,
   basePath: basePath,
   images: {
+    path: isGithubActions ? `${basePath}/image` : undefined,
     unoptimized: isGithubActions ? true : false,
   },
   webpack(config) {
