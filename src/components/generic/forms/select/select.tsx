@@ -26,7 +26,7 @@ export const Select = ({ children, ...props }: selectProps) => {
 
   const [value, setValue] = useState<string | null>(null);
 
-  const possibleValues = useMemo(() => DATA.map((d) => d.value), [DATA]);
+  const possibleValues = useMemo(() => DATA.map((d) => d.value), []);
   const [currentPossibleValue, setCurrentPossibleValue] = useState<string>(
     value ?? possibleValues[0]
   );
@@ -114,6 +114,8 @@ export const Select = ({ children, ...props }: selectProps) => {
     currentPossibleValue,
     setIsOpened,
     setCurrentPossibleValue,
+    handleControlClick,
+    handleControlKeydown,
   ]);
 
   return (

@@ -54,7 +54,7 @@ export const Calendar = ({
         ? setOutsideValue(value)
         : setInsideValue(value);
     },
-    [outsideValue, insideValue, setOutsideValue, setInsideValue]
+    [outsideValue, setOutsideValue, setInsideValue]
   );
 
   return (

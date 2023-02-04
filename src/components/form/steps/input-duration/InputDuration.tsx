@@ -57,7 +57,7 @@ export const InputDuration = ({ state, errors }: InputDurationProps) => {
     return isDateSame({ firstDate: min, secondDate: max })
       ? setOutsideValue({ start: null, end: null })
       : setOutsideValue({ start: min, end: max });
-  }, [calendarValue, isDateSame, getMinDate, getMaxDate]);
+  }, [calendarValue]);
 
   const handleInputChange = useCallback(
     (value: number) => {
@@ -78,7 +78,7 @@ export const InputDuration = ({ state, errors }: InputDurationProps) => {
 
       setCalendarValue([minDate, newDate]);
     },
-    [calendarValue, setCalendarValue, getMinDate, setDay]
+    [calendarValue, setCalendarValue]
   );
 
   // debugger;

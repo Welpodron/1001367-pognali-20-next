@@ -53,7 +53,7 @@ export const InputRoutesCountriesSelect = ({
     });
 
     return [...Array.from(set)].sort((a, b) => (a > b ? 1 : -1));
-  }, [COUNTRIES_ALL_RAW]);
+  }, []);
 
   const [currentCountriesFirstLetter, setCurrentCountriesFirstLetter] =
     useState<string>(countriesFirstLetters[0]);

@@ -39,11 +39,15 @@ export const StepperStep = ({
 
   // Регистрация шага в stepper
   useEffect(() => {
+    if (!ref || !ref.current) {
+      return;
+    }
+
     dispatchSteps({ type: "ADD_STEP", payload: { id, ref, number } });
     return () => {
       dispatchSteps({ type: "REMOVE_STEP", payload: { id, ref, number } });
     };
-  }, [dispatchSteps]);
+  }, [dispatchSteps, id, ref, number]);
 
   useEffect(() => {
     const nextStepIndex = steps.findIndex((step) => step.id === id) + 1;

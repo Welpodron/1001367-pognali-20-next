@@ -43,7 +43,7 @@ export const useForm = ({
         }
       }
     },
-    [_setErrors]
+    [_setErrors, validate]
   );
 
   const setFieldValue = useCallback(
@@ -69,7 +69,7 @@ export const useForm = ({
         errors: errors[field],
       };
     },
-    [values, setFieldValue]
+    [values, setFieldValue, errors]
   );
 
   const onSubmit = useCallback(

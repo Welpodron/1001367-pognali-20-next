@@ -23,7 +23,7 @@ export const FlagIcon = ({ value }: { value: string }) => {
     }
 
     return countryData[0].toLowerCase();
-  }, [value, COUNTRIES_WITH_FLAGS, setIsIconLoaded, setIsIconHaveError]);
+  }, [value, setIsIconLoaded, setIsIconHaveError]);
 
   return (
     <>

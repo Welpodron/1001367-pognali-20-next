@@ -82,14 +82,7 @@ export const CalendarDay = ({
 
       return setCalendarValue(_calendarValue as [Date | null, Date | null]);
     }
-  }, [
-    value,
-    calendarValue,
-    calendarInitialDate,
-    setCalendarValue,
-    isDateBefore,
-    isDateSame,
-  ]);
+  }, [value, calendarValue, calendarInitialDate, setCalendarValue]);
 
   return (
     <td className="block form-calendar-control-cell" {...props}>
