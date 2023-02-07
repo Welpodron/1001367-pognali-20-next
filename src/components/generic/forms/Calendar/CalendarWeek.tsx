@@ -29,7 +29,7 @@ export const CalendarWeek = ({
       {value.map((day, index) =>
         day ? (
           <CalendarDay
-            key={index}
+            key={"_" + day.getTime()}
             value={day}
             {...{
               calendarInitialDate,

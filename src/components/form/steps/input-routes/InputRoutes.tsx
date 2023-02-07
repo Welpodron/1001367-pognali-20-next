@@ -79,13 +79,11 @@ export const InputRoutes = ({
   const finalValue =
     outsideValue != null && setOutsideValue != null ? outsideValue : routes;
 
-  useEffect(() => {
-    if (setOutsideValue == null) {
-      return;
-    }
-
-    return setOutsideValue(routes);
-  }, [routes]);
+  // useEffect(() => {
+  //   if (setOutsideValue) {
+  //     return setOutsideValue(routes);
+  //   }
+  // }, [routes, setOutsideValue]);
 
   return (
     <InputRoutesContext.Provider
