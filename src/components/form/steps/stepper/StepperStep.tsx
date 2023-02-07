@@ -43,7 +43,7 @@ export const StepperStep = ({
     return () => {
       dispatchSteps({ type: "REMOVE_STEP", payload: { id, ref, number } });
     };
-  }, [dispatchSteps]);
+  }, [dispatchSteps, id, ref, number]);
 
   useEffect(() => {
     const nextStepIndex = steps.findIndex((step) => step.id === id) + 1;

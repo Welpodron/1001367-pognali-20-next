@@ -38,11 +38,31 @@ export default function Form() {
     initialValues: {
       companions: 1,
       children: false,
-      duration: {
-        start: new Date().setHours(0, 0, 0, 0),
-        end: new Date().setHours(24, 0, 0, 0),
-      },
+      duration: [
+        new Date(new Date().setHours(0, 0, 0, 0)),
+        new Date(new Date().setHours(24, 0, 0, 0)),
+      ],
       routes: [
+        {
+          id: uuidv4(),
+          country: null,
+          activity: null,
+          a: {
+            b: {
+              c: { d: 1 },
+            },
+          },
+        },
+        {
+          id: uuidv4(),
+          country: null,
+          activity: null,
+        },
+        {
+          id: uuidv4(),
+          country: null,
+          activity: null,
+        },
         {
           id: uuidv4(),
           country: null,
@@ -58,15 +78,14 @@ export default function Form() {
           : null;
       },
       duration: (value) => {
-        const _value = value as { start: Date | null; end: Date | null };
+        const _value = value as [Date | null, Date | null];
 
-        const duration =
-          _value.start && _value.end
-            ? getDaysBetween({
-                firstDate: _value.start as Date,
-                secondDate: _value.end as Date,
-              })
-            : null;
+        const duration = _value.every((date) => date != null)
+          ? getDaysBetween({
+              firstDate: _value[0] as Date,
+              secondDate: _value[1] as Date,
+            })
+          : null;
 
         if (!duration || duration < 1) {
           return "Минимальная длительность поездки должна быть не меньше 1 дня";
@@ -117,9 +136,12 @@ export default function Form() {
     <main>
       <form
         className="bg-[#D4D9EB] p-5 space-y-5"
-        onSubmit={form.onSubmit((values) => {
-          console.log(values);
-        })}
+        // onSubmit={form.onSubmit((values) => {
+        //   console.log(values);
+        // })}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
       >
         <Stepper activeStep={1}>
           <div className="flex items-center">
@@ -129,21 +151,21 @@ export default function Form() {
             <Stepper.Controls />
           </div>
           <Stepper.Steps>
-            <Stepper.Step
-              number={1}
-              title="Даты пребывания"
-              description="Укажите предпочтительное количество попутчиков, которых
+            <InputRoutes>
+              <Stepper.Step
+                number={1}
+                title="Даты пребывания"
+                description="Укажите предпочтительное количество попутчиков, которых
               вы хотели бы позвать в поездку и ее предполагаемую длительность."
-            >
-              <InputNumber
-                measure="Чел."
-                min={1}
-                label="Ищу попутчиков:"
-                {...form.getFieldProps("companions")}
-              />
-              <InputDuration {...form.getFieldProps("duration")} />
-            </Stepper.Step>
-            <InputRoutes {...form.getFieldProps("routes")}>
+              >
+                <InputNumber
+                  measure="Чел."
+                  min={1}
+                  label="Ищу попутчиков:"
+                  // {...form.getFieldProps("companions")}
+                />
+                <InputDuration />
+              </Stepper.Step>
               <Stepper.Step
                 number={2}
                 title="Маршрут"

@@ -1,0 +1,30 @@
+name: Публикация проекта на Github Pages
+
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Установка Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "latest"
+      - name: Установка Node зависимостей
+        run: npm ci
+      - name: Сборка проекта
+        run: npm run build
+      - name: Экспорт проекта
+        run: |
+          npm run export
+          touch out/.nojekyll
+      - name: Публикация на Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: out

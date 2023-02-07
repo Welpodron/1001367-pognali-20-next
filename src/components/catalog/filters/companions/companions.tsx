@@ -67,8 +67,6 @@ export const Companions = () => {
     },
     [
       sliderRef,
-      firstControlValue,
-      secondControlValue,
       firstControlRef,
       secondControlRef,
       setFirstControlValue,

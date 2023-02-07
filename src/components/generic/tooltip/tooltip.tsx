@@ -74,10 +74,6 @@ export const Tooltip = ({
   children: React.ReactNode;
   text: string;
 }) => {
-  if (!children) {
-    return null;
-  }
-
   const [isAnchorHovering, setIsAnchorHovering] = useState<boolean>(false);
 
   const anchor = Children.only(children) as React.ReactElement;
