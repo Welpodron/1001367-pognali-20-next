@@ -1,5 +1,12 @@
 import { useMergedRefs } from "@/hooks/use-merged-refs/use-merged-refs";
-import { forwardRef, useCallback, useContext, useEffect, useMemo } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { createPortal } from "react-dom";
 import { PopoverContext } from "./PopoverContext";
 
@@ -44,6 +51,7 @@ export const PopoverContent = forwardRef<
   } = useContext(PopoverContext);
 
   const dialogRef = useMergedRefs(contentRef, ref);
+  const firstFocusableElementRef = useRef<HTMLDivElement>(null);
 
   const handleDocumentClick = useCallback(
     (e: MouseEvent) => {
@@ -70,9 +78,9 @@ export const PopoverContent = forwardRef<
       if (e.key === "Tab") {
         if (e.shiftKey) {
           if (trapFocus) {
-            if (document.activeElement === contentRef.current) {
+            if (document.activeElement === firstFocusableElementRef.current) {
               e.preventDefault();
-              return contentRef.current?.focus();
+              return firstFocusableElementRef.current?.focus();
             }
           }
         }
@@ -83,7 +91,7 @@ export const PopoverContent = forwardRef<
         return setIsOpened(false);
       }
     },
-    [isOpened, setIsOpened, contentRef, trapFocus]
+    [isOpened, setIsOpened, firstFocusableElementRef, trapFocus]
   );
 
   const recalculatePosition = useCallback(() => {
@@ -198,12 +206,12 @@ export const PopoverContent = forwardRef<
   ]);
 
   const handleLastFocusableElementFocus = useCallback(() => {
-    if (!contentRef || !contentRef.current) {
+    if (!firstFocusableElementRef || !firstFocusableElementRef.current) {
       return;
     }
 
-    contentRef.current.focus();
-  }, [contentRef]);
+    firstFocusableElementRef.current.focus();
+  }, [firstFocusableElementRef]);
 
   if (!isDOMVisible && !isOpened) {
     return null;
@@ -217,9 +225,10 @@ export const PopoverContent = forwardRef<
         className={className}
         {...props}
         ref={dialogRef}
-        tabIndex={0}
       >
-        {children}
+        <div ref={firstFocusableElementRef} tabIndex={0}>
+          {children}
+        </div>
         {trapFocus && (
           <div
             onFocus={handleLastFocusableElementFocus}

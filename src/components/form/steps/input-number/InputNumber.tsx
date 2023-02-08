@@ -1,4 +1,4 @@
-import { useCallback, useId } from "react";
+import { useCallback, useEffect, useId, useRef } from "react";
 
 import PlusIcon from "/public/icons/svg/plus.svg";
 import MinusIcon from "/public/icons/svg/minus.svg";
@@ -13,6 +13,8 @@ export type InputNumberPropsType = {
   min?: number;
   /** Label инпута */
   label: string;
+  /** Обязательность инпута */
+  required?: boolean;
 };
 
 export const InputNumber = ({
@@ -22,12 +24,29 @@ export const InputNumber = ({
   min,
   touched,
   state,
+  required,
   errors: error,
 }: InputNumberPropsType & FieldPropsGenericType<number>) => {
   const id = useId();
 
   const [value, setValue] = state ?? [NaN, () => {}];
   const [isTouched, setIsTouched] = touched ?? [null, () => {}];
+
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!ref || !ref.current) {
+      return;
+    }
+
+    if (error) {
+      ref.current.setCustomValidity(error as unknown as string);
+    } else {
+      ref.current.setCustomValidity("");
+    }
+
+    ref.current.reportValidity();
+  }, [ref, error]);
 
   const handleControlClick = useCallback(
     (addition: number) => {
@@ -78,7 +97,9 @@ export const InputNumber = ({
         <input
           max={max ?? ""}
           min={min ?? ""}
+          required={required ?? false}
           type="number"
+          ref={ref}
           id={id}
           autoComplete="off"
           inputMode="numeric"

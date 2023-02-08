@@ -1,5 +1,5 @@
-import { Footer } from "@/components/global/footer/footer";
-import { Header } from "@/components/global/header/header";
+import { Footer } from "@/components/global/footer/Footer";
+import { Header } from "@/components/global/header/Header";
 
 import { Companions } from "@/components/index/companions/companions";
 import { Contacts } from "@/components/index/contacts/contacts";

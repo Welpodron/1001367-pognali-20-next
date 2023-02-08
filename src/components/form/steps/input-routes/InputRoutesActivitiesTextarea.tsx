@@ -1,5 +1,6 @@
 import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
 import { FlagIcon } from "@/components/global/icons/Flag";
+import { useRef, useEffect } from "react";
 
 export type InputRoutesCountriesTextareaPropsType = {
   /**
@@ -18,6 +19,22 @@ export const InputRoutesCountriesTextarea = ({
   const [value, setValue] = state ?? [null, () => {}];
   const [isTouched, setIsTouched] = touched ?? [null, () => {}];
 
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!ref || !ref.current) {
+      return;
+    }
+
+    if (error) {
+      ref.current.setCustomValidity(error as unknown as string);
+    } else {
+      ref.current.setCustomValidity("");
+    }
+
+    ref.current.reportValidity();
+  }, [ref, error]);
+
   return (
     <label className="form-routes-activity-field">
       <span className="form-routes-activity-field-label">
@@ -34,6 +51,7 @@ export const InputRoutesCountriesTextarea = ({
             ? "border-[#FF0000] border-b-0 rounded-b-none text-[#FF0000]"
             : "border-[#CBCED9]"
         }`}
+        ref={ref}
         value={value ?? ""}
         onFocus={() => setIsTouched(true)}
         onChange={(e: React.ChangeEvent) =>

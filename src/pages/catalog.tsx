@@ -1,5 +1,5 @@
-import { Footer } from "@/components/global/footer/footer";
-import { Header } from "@/components/global/header/header";
+import { Footer } from "@/components/global/footer/Footer";
+import { Header } from "@/components/global/header/Header";
 
 import { Countries as CountriesFilter } from "@/components/catalog/filters/countries/countries";
 

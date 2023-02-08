@@ -12,7 +12,9 @@ import { StepperSteps } from "./StepperSteps";
 type StepperPropsType = {
   /** Контент stepper */
   children: React.ReactNode;
-} & Pick<StepperContextType, "activeStep">;
+  /** Контроль извне */
+  state?: [number, (value: number) => void];
+};
 
 const stepperReducer = (
   state: StepType[],
@@ -36,14 +38,25 @@ const stepperReducer = (
   }
 };
 
-export const Stepper = ({ children, activeStep }: StepperPropsType) => {
-  const [_activeStep, setActiveStep] = useState(activeStep);
+export const Stepper = ({
+  children,
+  activeStep,
+  state,
+}: StepperPropsType & Pick<StepperContextType, "activeStep">) => {
+  const [insideValue, setInsideValue] = useState(activeStep);
+  const [outsideValue, setOutsideValue] = state ?? [];
+  const finalValue = outsideValue ?? insideValue;
 
   const [steps, dispatchSteps] = useReducer(stepperReducer, []);
 
   return (
     <StepperContext.Provider
-      value={{ steps, dispatchSteps, activeStep: _activeStep, setActiveStep }}
+      value={{
+        steps,
+        dispatchSteps,
+        activeStep: finalValue,
+        setActiveStep: setOutsideValue ?? setInsideValue,
+      }}
     >
       {children}
     </StepperContext.Provider>

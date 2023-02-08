@@ -24,7 +24,7 @@ export type StepperContextType = {
   /** Номер активного шага */
   activeStep: number;
   /** Функция для установки активного шага */
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+  setActiveStep: (value: number) => void;
 };
 
 export const StepperContext = createContext<StepperContextType>({

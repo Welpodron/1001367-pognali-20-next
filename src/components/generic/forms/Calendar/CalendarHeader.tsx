@@ -19,17 +19,20 @@ export const CalendarHeader = ({
   ...props
 }: CalendarHeaderPropsType) => {
   return (
-    <thead className="grid" {...props}>
+    <thead className="grid mb-2" {...props}>
       <tr>
-        <th className="flex items-center py-2" colSpan={7}>
+        <th
+          className="flex items-center py-3 mb-2 border-t-[1px] border-b-[1px] border-[#CBCED9]"
+          colSpan={7}
+        >
           <button
             type="button"
-            className="p-2 shrink-0"
+            className="p-2 px-3 shrink-0"
             onClick={() =>
               dispatchCalendarCurrentDate({ type: "PREVIOUS_MONTH" })
             }
           >
-            <ArrowLeftIcon width={9} height={18} />
+            <ArrowLeftIcon width={9} height={18} className="opacity-30" />
           </button>
           <p className="capitalize grow font-bold text-[#1D2E5B] text-[20px] leading-none">
             {calendarCurrentDate.toLocaleString(calendarLocale, {
@@ -39,16 +42,21 @@ export const CalendarHeader = ({
           </p>
           <button
             type="button"
-            className="p-2 shrink-0"
+            className="p-2 px-3 shrink-0"
             onClick={() => dispatchCalendarCurrentDate({ type: "NEXT_MONTH" })}
           >
-            <ArrowRightIcon width={9} height={18} />
+            <ArrowRightIcon width={9} height={18} className="opacity-30" />
           </button>
         </th>
       </tr>
       <tr className="grid grid-cols-7">
         {getWeekdaysNames({ locale: calendarLocale }).map((day, index) => (
-          <th className="capitalize" key={index}>
+          <th
+            className={`capitalize text-[#444444] ${
+              index > 4 ? "text-[#FF5C23]" : ""
+            }`}
+            key={index}
+          >
             {day}
           </th>
         ))}

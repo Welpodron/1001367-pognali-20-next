@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   setFieldValue as _setFieldValue,
@@ -173,25 +173,72 @@ export const useForm = ({
   );
 
   const validateValues = useCallback(() => {
+    const foundErrors: {
+      incorrectValue: any;
+      incorrectValues: any;
+      field: string;
+      errors: any;
+    }[] = [];
     _forEachField(values, "", (value, field) => {
       if (validate) {
         const validator = _getFieldValue(validate, field.split(".")[0]);
         if (typeof validator === "function") {
-          __setErrors(
+          const errors = validator({
+            value: Array.isArray(value) ? undefined : value,
+            values: Array.isArray(value) ? value : undefined,
             field,
-            validator({
-              value: Array.isArray(value) ? undefined : value,
-              values: Array.isArray(value) ? value : undefined,
+          });
+          if (errors) {
+            foundErrors.push({
+              incorrectValue: Array.isArray(value) ? undefined : value,
+              incorrectValues: Array.isArray(value) ? value : undefined,
               field,
-            })
-          );
+              errors,
+            });
+          }
+          __setErrors(field, errors);
         }
       }
     });
+    return foundErrors;
   }, [values, validate, __setErrors]);
+
+  const handleSubmit = useCallback(
+    (
+      callback: (values: Record<string, any>) => any,
+      errorsHandler?: (
+        errors: {
+          incorrectValue: any;
+          incorrectValues: any;
+          field: string;
+          errors: any;
+        }[]
+      ) => any
+    ) => {
+      return (event: React.FormEvent) => {
+        event.preventDefault();
+        // Нужно подождать пока валидация будет пройдена, после этого вызвать callback
+        const validationErrors = validateValues();
+        if (!validationErrors.length) {
+          callback(values);
+        } else {
+          if (errorsHandler) {
+            errorsHandler(validationErrors);
+          } else {
+            console.error(
+              "Произошли ошибки при валидации формы: ",
+              validationErrors
+            );
+          }
+        }
+      };
+    },
+    [values, validateValues]
+  );
 
   return {
     values,
+    handleSubmit,
     submitting: [isSubmitting, setIsSubmitting] as [
       boolean,
       (value: boolean) => void

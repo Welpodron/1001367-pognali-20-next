@@ -75,14 +75,6 @@
     @apply border-[#FF5C23] border-[2px] z-[2] opacity-100;
   }
 
-  .select-custom-js-option[data-possible-selected="true"] {
-    @apply bg-blue-200;
-  }
-
-  .select-custom-js-option[data-selected="true"] {
-    @apply bg-[#FF5C23];
-  }
-
   .form-routes-activity-field {
     @apply relative block;
   }

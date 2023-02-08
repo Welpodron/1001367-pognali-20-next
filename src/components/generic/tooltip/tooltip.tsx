@@ -54,7 +54,7 @@ export const Tooltip = ({ children, text }: TooltipPropsType) => {
       _anchorRef.removeEventListener("mouseenter", handleMouseEnter);
       _anchorRef.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [anchorRef, handleMouseEnter]);
+  }, [anchorRef, handleMouseEnter, handleMouseLeave]);
 
   const anchorWithRef = cloneElement(anchor, {
     ref: anchorRef,

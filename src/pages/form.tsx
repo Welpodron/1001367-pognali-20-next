@@ -9,6 +9,10 @@ import { getDaysBetween } from "@/utils/time/time";
 import { InputRoutesCountriesSelect } from "@/components/form/steps/input-routes/InputRoutesCountriesSelect";
 import { InputRoutesCountriesTextarea } from "@/components/form/steps/input-routes/InputRoutesActivitiesTextarea";
 import PlusIcon from "/public/icons/svg/plus.svg";
+import { useState } from "react";
+
+import { Modal } from "@/components/generic/modal/Modal";
+import { InputCheckbox } from "@/components/form/steps/input-checkbox/InputCheckbox";
 /*
 
 На данный момент собственная валидация на уровне схемы не имплементирована, но в будущем будет добавлена :c
@@ -37,6 +41,7 @@ export default function Form() {
   const form = useForm({
     initialValues: {
       companions: 1,
+      withChildren: true,
       duration: [
         new Date(new Date().setHours(0, 0, 0, 0)),
         new Date(new Date().setHours(24, 0, 0, 0)),
@@ -93,21 +98,23 @@ export default function Form() {
     },
   });
 
+  const [step, setStep] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submittedValues, setSubmittedValues] = useState({});
+
   return (
     <main>
       <form
         className="bg-[#D4D9EB] p-5 space-y-5"
-        // onSubmit={form.onSubmit((values) => {
-        //   console.log(values);
-        // })}
-        onSubmit={(e) => {
-          e.preventDefault();
-          // console.log(form.values);
-          form.validateValues();
-          // form.resetValues();
-        }}
+        onSubmit={form.handleSubmit((values) => {
+          console.log({ values });
+          setSubmittedValues(values);
+          setIsModalOpen(true);
+          form.resetValues();
+          setStep(1);
+        })}
       >
-        <Stepper activeStep={1}>
+        <Stepper state={[step, setStep]} activeStep={1}>
           <div className="flex items-center">
             <h2 className="text-[#1D2E5B] font-bold text-[24px] leading-none pr-2">
               Добавить план:
@@ -125,12 +132,18 @@ export default function Form() {
                 measure="Чел."
                 min={1}
                 label="Ищу попутчиков:"
+                required={true}
                 {...form.getFieldProps("companions")}
+              />
+              <InputCheckbox
+                label="Можно с детьми"
+                {...form.getFieldProps("withChildren")}
               />
               <InputDuration
                 measure="Дн."
                 min={1}
                 label="Длительность:"
+                required={true}
                 {...form.getFieldProps("duration")}
               />
             </Stepper.Step>
@@ -186,6 +199,11 @@ export default function Form() {
             </Stepper.Step>
           </Stepper.Steps>
         </Stepper>
+        <Modal state={[isModalOpen, setIsModalOpen]}>
+          <Modal.Content>
+            {JSON.stringify(submittedValues, null, 2)}
+          </Modal.Content>
+        </Modal>
       </form>
     </main>
   );
