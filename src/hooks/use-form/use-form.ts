@@ -1,60 +1,41 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   setFieldValue as _setFieldValue,
   getFieldValue as _getFieldValue,
   insertFieldValue as _insertFieldValue,
   removeFieldValue as _removeFieldValue,
+  forEachField as _forEachField,
 } from "@/utils/object/object";
-
-export type UseFormPropsType = Record<string, any>;
-
-/*
- Структура объекта field:
-  {
-    ref: React.RefObject<any>, // ссылка на поле
-    name: string, // имя поля
-    id: string, // id поля
-    errors: error[], // ошибка поля
-    isTouched: boolean, // было ли поле сфокусировано
-    isUpdated: boolean, // было ли поле изменено
-    isValid: boolean, // является ли поле валидным
-    isRequired: boolean, // является ли поле обязательным
-    isDisabled: boolean, // является ли поле неактивным
-    isHidden: boolean, // является ли поле скрытым
-    isReadonly: boolean, // является ли поле только для чтения
-    state: [value, setValue], // состояние поля (контроль над ним)
-    initialValue: any, // начальное значение поля
-    методы поля
-    reset: () => void, // сбросить поле
-    validate: () => void, // валидировать поле
-    setTouched: () => void, // установить флаг сфокусированности
-    setUpdated: () => void, // установить флаг изменения
-    setValid: () => void, // установить флаг валидности
-    setRequired: () => void, // установить флаг обязательности
-    setDisabled: () => void, // установить флаг неактивности
-    setHidden: () => void, // установить флаг скрытости
-    setReadonly: () => void, // установить флаг только для чтения
-  }
-*/
 
 export const useForm = ({
   initialValues,
   validate,
 }: {
-  initialValues: UseFormPropsType;
-  validate?: Record<string, (value: any) => any>;
+  initialValues: Record<string, any>;
+  validate?: Record<
+    string,
+    ({
+      value,
+      values,
+      field,
+    }: {
+      value: any;
+      values: any;
+      field: string;
+    }) => any
+  >;
 }) => {
   const initials = useMemo(() => initialValues, [initialValues]);
+  const [values, _setValues] = useState(initialValues);
 
+  const [isValid, setIsValid] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [values, _setValues] = useState(initialValues);
   // Начало блока для управления ошибками полей формы
   const [_errors, _setErrors] = useState<{ field: string; errors: any[] }[]>(
     []
   );
-
   const __setErrors = useCallback(
     (field: string, errors: any) => {
       // Внимание! Проверки на существование такого поля в исходном объекте не проводятся
@@ -78,6 +59,9 @@ export const useForm = ({
     },
     [_setErrors]
   );
+  useEffect(() => {
+    setIsValid(!_errors.length);
+  }, [_errors, setIsValid]);
   // Конец блока для управления ошибками полей формы
 
   // Начало блока для управления touched состоянием полей формы
@@ -118,15 +102,28 @@ export const useForm = ({
 
   const setFieldValue = useCallback(
     (field: string, value: any) => {
-      _setValues((currentValues) =>
-        _setFieldValue(currentValues, field, value)
-      );
+      _setValues((currentValues) => {
+        if (validate) {
+          const validator = _getFieldValue(validate, field.split(".")[0]);
+          if (typeof validator === "function") {
+            __setErrors(
+              field,
+              validator({
+                value: Array.isArray(value) ? undefined : value,
+                values: Array.isArray(value) ? value : undefined,
+                field,
+              })
+            );
+          }
+        }
+        return _setFieldValue(currentValues, field, value);
+      });
     },
-    [_setValues]
+    [_setValues, __setErrors, validate]
   );
 
   const getFieldValue = useCallback(
-    (field: string) => _getFieldValue(values, field),
+    <T = any>(field: string) => _getFieldValue(values, field) as T,
     [values]
   );
 
@@ -141,11 +138,21 @@ export const useForm = ({
 
   const removeFieldValue = useCallback(
     (field: string, index?: number) => {
-      _setValues((currentValues) =>
-        _removeFieldValue(currentValues, field, index)
-      );
+      _setErrors((currentErrors) => {
+        return currentErrors.filter(
+          (obj) => !obj.field.includes(`${field}.${index}`)
+        );
+      });
+      _setTouched((currentTouched) => {
+        return currentTouched.filter(
+          (obj) => !obj.field.includes(`${field}.${index}`)
+        );
+      });
+      _setValues((currentValues) => {
+        return _removeFieldValue(currentValues, field, index);
+      });
     },
-    [_setValues]
+    [_setValues, _setTouched, _setErrors]
   );
 
   const getFieldProps = useCallback(
@@ -165,18 +172,38 @@ export const useForm = ({
     [getFieldValue, setFieldValue, _touched, __setTouched, _errors]
   );
 
+  const validateValues = useCallback(() => {
+    _forEachField(values, "", (value, field) => {
+      if (validate) {
+        const validator = _getFieldValue(validate, field.split(".")[0]);
+        if (typeof validator === "function") {
+          __setErrors(
+            field,
+            validator({
+              value: Array.isArray(value) ? undefined : value,
+              values: Array.isArray(value) ? value : undefined,
+              field,
+            })
+          );
+        }
+      }
+    });
+  }, [values, validate, __setErrors]);
+
   return {
     values,
-    submitted: [isSubmitting, setIsSubmitting] as [
+    submitting: [isSubmitting, setIsSubmitting] as [
       boolean,
       (value: boolean) => void
     ],
+    valid: [isValid, setIsValid] as [boolean, (value: boolean) => void],
     _touched,
     setFieldsTouched: _setTouched,
     setFieldTouched: __setTouched,
     _errors,
     setFieldsErrors: _setErrors,
     setFieldError: __setErrors,
+    validateValues,
     resetValues,
     setValues,
     setFieldValue,

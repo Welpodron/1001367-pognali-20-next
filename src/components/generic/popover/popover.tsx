@@ -1,80 +1,48 @@
-import { PopoverContext } from "./popoverContext";
+import { useRef, useState } from "react";
 
-import { PopoverControl as Control } from "./popoverControl";
-import { PopoverContent as Content } from "./popoverContent";
-import { useEffect, useRef, useState } from "react";
+import { PopoverContextType, PopoverContext } from "./PopoverContext";
+import { PopoverContent } from "./PopoverContent";
+import { PopoverControl } from "./PopoverControl";
 
-type popoverProps = {
+type PopoverPropsType = {
   /**
-   * Следует ли отображать popover в DOM сразу же после рендера (смены состояния isOpened)
-   * */
-  isDOMVisible?: boolean;
-  /**
-   * Следует ли закрывать popover при нажатии на esc
-   * */
-  shouldCloseOnEscape?: boolean;
-  /**
-   * Следует ли фиксировать фокус внутри popover
-   * */
-  trapFocus?: boolean;
-  /**
-   * Как popover будет отображаться: внутри родителя или в портале
-   * */
-  strategy?: "parent" | "portal";
-  /**
-   * Контент, который будет отображаться внутри popover
+   * Содержимое popover
    */
   children: React.ReactNode;
   /**
-   * Открыт ли popover сейчас (полный контроль над состоянием открытия из вне)
+   * Внешнее управление открытием/закрытием popover
    */
-  isOpened?: boolean;
-  /**
-   * Опциональный аргумент, влияющий на начальное состояние popover (контроль над состоянием открытия внутри компонента, а не из вне)
-   * */
-  isInitiallyOpened?: boolean;
-  /**
-   * Срабатывает при изменении состояния popover
-   */
-  onChange?: (isOpened: boolean) => void;
-};
+  state?: [boolean, (value: boolean) => void];
+} & Omit<
+  PopoverContextType,
+  "controlRef" | "contentRef" | "isOpened" | "setIsOpened"
+>;
 
 export const Popover = ({
   children,
-  isOpened,
   trapFocus = false,
-  isInitiallyOpened = false,
-  shouldCloseOnEscape = true,
   isDOMVisible = false,
   strategy = "portal",
-  onChange,
-}: popoverProps) => {
-  const [_isOpened, set_IsOpened] = useState<boolean>(isInitiallyOpened);
+  state,
+}: PopoverPropsType) => {
+  const [insideValue, setInsideValue] = useState<boolean>(false);
+  const [outsideValue, setOutsideValue] = state ?? [];
+
+  const finalValue = outsideValue != null ? outsideValue : insideValue;
 
   const controlRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
-    if (onChange) {
-      onChange(_isOpened);
-    }
-  }, [_isOpened, onChange]);
-
   return (
     <PopoverContext.Provider
       value={{
-        isOpened: isOpened ?? _isOpened,
-        setIsOpened:
-          isOpened != null
-            ? () => {
-                set_IsOpened(isOpened);
-              }
-            : set_IsOpened,
+        isOpened: finalValue,
+        isDOMVisible,
+        setIsOpened: setOutsideValue ?? setInsideValue,
         controlRef,
         contentRef,
         strategy,
         trapFocus,
-        isDOMVisible,
       }}
     >
       {children}
@@ -84,5 +52,5 @@ export const Popover = ({
 
 Popover.displayName = "Popover";
 
-Popover.Control = Control;
-Popover.Content = Content;
+Popover.Control = PopoverControl;
+Popover.Content = PopoverContent;

@@ -1,3 +1,5 @@
+import { StepperContextType } from "./StepperContext";
+
 export type StepperControlProps = {
   /** Идентификатор шага */
   id: string;
@@ -5,11 +7,7 @@ export type StepperControlProps = {
   title: string;
   /** Номер шага */
   number: number;
-  /** Номер активного шага */
-  activeStep: number;
-  /** Функция для установки активного шага */
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
-};
+} & Pick<StepperContextType, "activeStep" | "setActiveStep">;
 
 export const StepperControl = ({
   title,

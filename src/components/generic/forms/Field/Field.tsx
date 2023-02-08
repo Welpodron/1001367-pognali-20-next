@@ -46,15 +46,17 @@ export const Field = ({
       return;
     }
 
-    (ref.current as any).addEventListener("focus", handleFieldFocus);
+    const element = ref.current as any;
+
+    element.addEventListener("focus", handleFieldFocus);
 
     return () => {
       // В этом месте происходит ошибка если ref перестал существовать
-      if (!ref || !ref.current) {
+      if (element) {
         return;
       }
 
-      (ref.current as any).removeEventListener("focus", handleFieldFocus);
+      element.removeEventListener("focus", handleFieldFocus);
     };
   }, [ref, handleFieldFocus]);
 

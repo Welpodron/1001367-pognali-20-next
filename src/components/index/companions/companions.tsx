@@ -6,7 +6,7 @@ import ArrowRightIcon from "/public/icons/svg/1D2E5B-utils-triangle-arrow-right.
 
 import { COMPANIONS, COUNTRIES, TRANSPORTS } from "@/data/data";
 
-import { Tooltip } from "@/components/generic/tooltip/tooltip";
+import { Tooltip } from "@/components/generic/Tooltip/Tooltip";
 
 import Image from "next/image";
 

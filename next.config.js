@@ -18,6 +18,14 @@ const nextConfig = {
   basePath: basePath,
   images: {
     unoptimized: isGithubActions ? true : false,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "countryflagsapi.com",
+        port: "",
+        pathname: "/svg/**",
+      },
+    ],
   },
   webpack(config, { dev, isServer }) {
     config.module.rules.push({

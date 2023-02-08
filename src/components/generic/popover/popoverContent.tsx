@@ -1,16 +1,9 @@
 import { useMergedRefs } from "@/hooks/use-merged-refs/use-merged-refs";
-import {
-  forwardRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { forwardRef, useCallback, useContext, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { PopoverContext } from "./popoverContext";
+import { PopoverContext } from "./PopoverContext";
 
-type popoverContentProps = {
+export type PopoverContentPropsType = {
   /**
    * Контент, который будет отображаться внутри popover
    */
@@ -38,7 +31,7 @@ const PopoverContentWrapper = ({
 
 export const PopoverContent = forwardRef<
   HTMLDialogElement,
-  popoverContentProps
+  PopoverContentPropsType
 >(({ children, className, ...props }, ref) => {
   const {
     isOpened,
@@ -47,52 +40,51 @@ export const PopoverContent = forwardRef<
     controlRef,
     strategy,
     trapFocus,
-    shouldCloseOnEscape,
     isDOMVisible,
   } = useContext(PopoverContext);
 
   const dialogRef = useMergedRefs(contentRef, ref);
 
-  const handleDocumentClick = (e: MouseEvent) => {
-    if (!isOpened) {
-      return;
-    }
+  const handleDocumentClick = useCallback(
+    (e: MouseEvent) => {
+      if (!isOpened) {
+        return;
+      }
 
-    if (
-      !contentRef.current?.contains(e.target as Node) &&
-      !controlRef.current?.contains(e.target as Node)
-    ) {
-      return setIsOpened(false);
-    }
-  };
+      if (
+        !contentRef.current?.contains(e.target as Node) &&
+        !controlRef.current?.contains(e.target as Node)
+      ) {
+        return setIsOpened(false);
+      }
+    },
+    [isOpened, setIsOpened, contentRef, controlRef]
+  );
 
-  const handleDocumentKeyDown = (e: KeyboardEvent) => {
-    if (!isOpened) {
-      return;
-    }
+  const handleDocumentKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!isOpened) {
+        return;
+      }
 
-    if (e.key === "Tab") {
-      if (e.shiftKey) {
-        if (trapFocus) {
-          if (document.activeElement === contentRef.current) {
-            e.preventDefault();
-            return contentRef.current?.focus();
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (trapFocus) {
+            if (document.activeElement === contentRef.current) {
+              e.preventDefault();
+              return contentRef.current?.focus();
+            }
           }
         }
       }
-    }
 
-    if (e.key === "Escape") {
-      if (shouldCloseOnEscape) {
+      if (e.key === "Escape") {
         e.preventDefault();
         return setIsOpened(false);
       }
-    }
-  };
-
-  const handleWindowResize = () => {
-    recalculatePosition();
-  };
+    },
+    [isOpened, setIsOpened, contentRef, trapFocus]
+  );
 
   const recalculatePosition = useCallback(() => {
     if (
@@ -140,6 +132,10 @@ export const PopoverContent = forwardRef<
       contentRef.current.style.top = y - contentHeight + "px";
     }
   }, [contentRef, controlRef, strategy]);
+
+  const handleWindowResize = useCallback(() => {
+    recalculatePosition();
+  }, [recalculatePosition]);
 
   const resizeObserver = useMemo(
     () =>
@@ -195,7 +191,10 @@ export const PopoverContent = forwardRef<
     strategy,
     resizeObserver,
     trapFocus,
-    shouldCloseOnEscape,
+    recalculatePosition,
+    handleDocumentKeyDown,
+    handleDocumentClick,
+    handleWindowResize,
   ]);
 
   const handleLastFocusableElementFocus = useCallback(() => {

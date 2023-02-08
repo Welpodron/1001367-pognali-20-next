@@ -1,14 +1,10 @@
-import React, { createContext, Dispatch } from "react";
+import React, { createContext } from "react";
 
-type popoverContext = {
+export type PopoverContextType = {
   /**
    * Следует ли отображать popover в DOM сразу же после рендера (смены состояния isOpened)
    * */
   isDOMVisible?: boolean;
-  /**
-   * Следует ли закрывать popover при нажатии на esc
-   * */
-  shouldCloseOnEscape?: boolean;
   /**
    * Следует ли фиксировать фокус внутри popover
    * */
@@ -32,16 +28,15 @@ type popoverContext = {
   /**
    * Устанавливает открыт ли popover
    * */
-  setIsOpened: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpened: (isOpened: boolean) => void;
 };
 
-export const PopoverContext = createContext<popoverContext>({
+export const PopoverContext = createContext<PopoverContextType>({
   controlRef: { current: null },
   contentRef: { current: null },
   isDOMVisible: false,
   isOpened: false,
   trapFocus: false,
-  shouldCloseOnEscape: true,
   strategy: "portal",
   setIsOpened: () => {},
 });

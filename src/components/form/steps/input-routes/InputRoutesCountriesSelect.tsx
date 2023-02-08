@@ -1,49 +1,38 @@
-import { useContext, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { COUNTRIES_ALL_RAW } from "@/data/data";
 
-import { useClickedOutside } from "@/hooks/use-clicked-outside/use-clicked-outside";
-
-import { Popover } from "@/components/generic/popover/popover";
-
-import { InputRoutesContext } from "./InputRoutesContext";
+import { Popover } from "@/components/generic/Popover/Popover";
 
 import { FlagIcon } from "@/components/global/icons/Flag";
 import DropdownIcon from "/public/icons/svg/000000-utils-dropdown-form.svg";
 import CloseIcon from "/public/icons/svg/192144-utils-close.svg";
+import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
 
-export type InputRoutesCountriesSelectProps = {
-  /** Идентификатор селекта страны */
-  id: string;
-  /** Значение селекта страны */
-  value?: string | null;
-  /** Ошибка инпута */
-  error?: string;
+export type InputRoutesCountriesSelectPropsType = {
+  routes: {
+    id: string;
+    country: null | string;
+    activity: null | string;
+  }[];
+  deleteRoute(): void;
 };
 
 export const InputRoutesCountriesSelect = ({
-  id,
-  value,
-  error,
-}: InputRoutesCountriesSelectProps) => {
+  routes,
+  state,
+  touched,
+  deleteRoute,
+  errors: error,
+}: InputRoutesCountriesSelectPropsType &
+  FieldPropsGenericType<null | string>) => {
   const [isOpened, setIsOpened] = useState(false);
-  const [isTouched, setIsTouched] = useState(false);
 
-  const { routes, dispatchRoutes } = useContext(InputRoutesContext);
+  const [value, setValue] = state ?? [null, () => {}];
+  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
 
   const controlRef = useRef<HTMLButtonElement>(null);
-  const contentRef = useClickedOutside<HTMLDialogElement>(
-    (e: MouseEvent) => {
-      if (!controlRef || !controlRef.current) {
-        return;
-      }
-
-      if (isOpened && !controlRef.current.contains(e.target as Node)) {
-        return setIsOpened(false);
-      }
-    },
-    [isOpened, setIsOpened, controlRef]
-  );
+  const contentRef = useRef<HTMLDialogElement>(null);
 
   const countriesFirstLetters = useMemo<string[]>(() => {
     const set = new Set<string>();
@@ -61,27 +50,21 @@ export const InputRoutesCountriesSelect = ({
   return (
     <div className="relative">
       <Popover
-        shouldCloseOnEscape={false}
+        state={[isOpened, setIsOpened]}
         strategy="parent"
         trapFocus={true}
-        isOpened={isOpened}
       >
         <div className="flex">
           <Popover.Control
             type="button"
             className={`border-[1px] bg-white rounded px-2 py-3 truncate text-left grow uppercase font-medium text-[14px] leading-none flex items-center ${
-              error && isTouched
+              error
                 ? "text-[#FF0000] border-[#FF0000]"
                 : "text-[#1D2E5B] border-[#CBCED9]"
             } `}
             as="button"
             ref={controlRef}
-            onClick={() => {
-              setIsTouched(true);
-              setIsOpened((currentState) => !currentState);
-            }}
             onFocus={() => setIsTouched(true)}
-            onBlur={() => setIsTouched(true)}
           >
             <p className="pr-2 truncate">{value ?? "Выберите страну"}</p>
             <DropdownIcon
@@ -94,16 +77,16 @@ export const InputRoutesCountriesSelect = ({
           {value && (
             <div
               className={`border-[1px] border-l-0 rounded p-2 ${
-                error && isTouched ? "border-[#FF0000]" : "border-[#CBCED9]"
+                error ? "border-[#FF0000]" : "border-[#CBCED9]"
               }`}
             >
               <div className="relative w-[35px] h-[24px] rounded overflow-hidden grid place-items-center place-content-center">
-                <FlagIcon value={value} />
+                <FlagIcon value={value as string} />
               </div>
             </div>
           )}
         </div>
-        {error && isTouched && (
+        {error && (
           <p className="p-2 px-3 text-[#FF0000] bg-[#FFEFEF] rounded-b-md">
             {error}
           </p>
@@ -141,10 +124,7 @@ export const InputRoutesCountriesSelect = ({
                 <li key={index}>
                   <button
                     onClick={() => {
-                      dispatchRoutes({
-                        type: "UPDATE_ROUTE",
-                        payload: { id, country },
-                      });
+                      setValue(country);
                       setIsOpened(false);
                     }}
                     type="button"
@@ -162,9 +142,7 @@ export const InputRoutesCountriesSelect = ({
           type="button"
           className="bg-[#EDEFF6] w-[21px] h-[21px] rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 grid place-content-center place-items-center"
           aria-label="Удалить маршрут"
-          onClick={() =>
-            dispatchRoutes({ type: "DELETE_ROUTE", payload: { id } })
-          }
+          onClick={() => deleteRoute()}
         >
           <CloseIcon fill="#AFB0B5" width={9} height={9} />
         </button>

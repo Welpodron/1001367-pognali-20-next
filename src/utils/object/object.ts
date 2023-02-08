@@ -231,3 +231,28 @@ export const removeFieldValue = (
   _removeFieldValue(_obj, path, index);
   return _obj;
 };
+
+/**
+ * Функция вызывает callback для каждого поля объекта
+ * @param {Record<string, any>} obj - объект
+ * @param {string} path - путь до поля объекта
+ * @param {(value: any, path: string) => any} callback - функция, которая будет вызвана для каждого поля объекта
+ * */
+export const forEachField = (
+  obj: Record<string, any>,
+  path: string,
+  callback: (value: any, path: string) => any
+) => {
+  Object.keys(obj).forEach((key) => {
+    if (
+      typeof obj[key] === "object" &&
+      obj[key] !== null &&
+      !(obj[key] instanceof Date)
+      // && !Array.isArray(obj[key])
+    ) {
+      forEachField(obj[key], path + key + ".", callback);
+    } else {
+      callback(obj[key], path + key);
+    }
+  });
+};

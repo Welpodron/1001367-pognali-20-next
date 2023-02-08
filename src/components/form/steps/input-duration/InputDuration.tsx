@@ -1,42 +1,35 @@
-import { useMemo, useState, useCallback } from "react";
+import { useCallback } from "react";
+
+import { getDaysBetween, getMinDate, setDay } from "@/utils/time/time";
 
 import {
-  getCurrentDate,
-  getDaysBetween,
-  getMinDate,
-  setDay,
-} from "@/utils/time/time";
+  Calendar,
+  CalendarPropsType,
+} from "@/components/generic/forms/Calendar/Calendar";
+import {
+  InputNumber,
+  InputNumberPropsType,
+} from "@/components/form/steps/input-number/InputNumber";
+import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
 
-import { Calendar } from "@/components/generic/forms/Calendar/Calendar";
-import { InputNumber } from "../input-number/InputNumber";
+export type InputDurationPropsType = {} & CalendarPropsType &
+  InputNumberPropsType &
+  FieldPropsGenericType<[Date | null, Date | null]>;
 
-type InputDurationProps = {
-  /** Контроль извне */
-  state?: [
-    [Date | null, Date | null],
-    (value: [Date | null, Date | null]) => void
-  ];
-  /** Ошибка инпута */
-  errors?: string;
-};
-
-export const InputDuration = ({ state, errors }: InputDurationProps) => {
-  const currentCalendarDate = useMemo(() => getCurrentDate(), []);
-
-  const [insideValue, setInsideValue] = useState<[Date | null, Date | null]>([
-    currentCalendarDate,
-    setDay(currentCalendarDate, currentCalendarDate.getDate() + 2),
-  ]);
-  const [outsideValue, setOutsideValue] = state ?? [];
-
-  const finalValue =
-    outsideValue != null && setOutsideValue != null
-      ? outsideValue
-      : insideValue;
+export const InputDuration = ({
+  label,
+  measure,
+  min,
+  max,
+  state,
+  touched,
+  errors,
+}: InputDurationPropsType) => {
+  const [value, setValue] = state ?? [[null, null], () => {}];
 
   const handleInputChange = useCallback(
-    (value: number) => {
-      const filtered = finalValue.filter((date) => date != null) as Date[];
+    (_value: number) => {
+      const filtered = value.filter((date) => date != null) as Date[];
 
       if (filtered.length === 0) {
         return;
@@ -45,48 +38,34 @@ export const InputDuration = ({ state, errors }: InputDurationProps) => {
       const minDate = getMinDate(...filtered);
 
       // Поставить первую не нулевую минимальную дату
-      if (value < 0 || isNaN(value)) {
-        return setOutsideValue != null
-          ? setOutsideValue([minDate, null])
-          : setInsideValue([minDate, null]);
+      if (_value < 0 || isNaN(_value)) {
+        return setValue([minDate, null]);
       }
 
-      const newDate = setDay(minDate, minDate.getDate() + value);
+      const newDate = setDay(minDate, minDate.getDate() + _value);
 
-      setOutsideValue != null
-        ? setOutsideValue([minDate, newDate])
-        : setInsideValue([minDate, newDate]);
+      setValue([minDate, newDate]);
     },
-    [finalValue, setInsideValue, setOutsideValue]
+    [value, setValue]
   );
 
   return (
     <>
       <InputNumber
         state={[
-          finalValue.every((date) => date != null)
+          value.every((date) => date != null)
             ? getDaysBetween({
-                firstDate: finalValue[0] as Date,
-                secondDate: finalValue[1] as Date,
+                firstDate: value[0] as Date,
+                secondDate: value[1] as Date,
               })
             : NaN,
           handleInputChange,
         ]}
-        measure="Дн."
-        min={1}
-        label="Длительность:"
-        errors={errors}
+        {...{ min, max, label, touched, errors, measure }}
       />
-      <Calendar
-        state={[
-          finalValue,
-          setOutsideValue != null ? setOutsideValue : setInsideValue,
-        ]}
-      />
+      <Calendar {...{ state, errors, touched }} />
     </>
   );
 };
-
-InputDuration.whyDidYouRender = true;
 
 InputDuration.displayName = "Input.Duration";

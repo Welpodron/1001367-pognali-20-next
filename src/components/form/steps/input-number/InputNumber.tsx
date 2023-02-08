@@ -1,94 +1,58 @@
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId } from "react";
 
 import PlusIcon from "/public/icons/svg/plus.svg";
 import MinusIcon from "/public/icons/svg/minus.svg";
+import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
 
-type InputNumberProps = {
-  /** Контроль извне */
-  state?: [number, (value: number) => void];
-  /** Начальное значение инпута */
-  initialValue?: number;
+export type InputNumberPropsType = {
   /** Единица измерения инпута */
   measure: string;
-  /** Обязательное поле или нет */
-  required?: boolean;
   /** Максимальное значение инпута */
   max?: number;
   /** Минимальное значение инпута */
   min?: number;
   /** Label инпута */
   label: string;
-  /** Ошибка инпута */
-  errors?: string;
 };
 
 export const InputNumber = ({
   label,
-  required,
   measure,
-  state,
-  initialValue,
   max,
   min,
-  errors,
-}: InputNumberProps) => {
-  const [insideValue, setInsideValue] = useState<number>(
-    initialValue != null ? initialValue : NaN
-  );
-  const [outsideValue, setOutsideValue] = state ?? [];
-
-  const finalValue =
-    outsideValue != null && setOutsideValue != null
-      ? outsideValue
-      : insideValue;
-
+  touched,
+  state,
+  errors: error,
+}: InputNumberPropsType & FieldPropsGenericType<number>) => {
   const id = useId();
+
+  const [value, setValue] = state ?? [NaN, () => {}];
+  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
 
   const handleControlClick = useCallback(
     (addition: number) => {
-      const nextValue =
-        outsideValue != null ? outsideValue + addition : insideValue + addition;
+      const nextValue = value + addition;
 
-      if (
-        outsideValue != null &&
-        setOutsideValue != null &&
-        isNaN(outsideValue)
-      ) {
-        return setOutsideValue(min ?? outsideValue);
+      if (min != null && nextValue < min) {
+        return setValue(min);
       }
 
-      if (
-        outsideValue == null &&
-        setOutsideValue == null &&
-        isNaN(insideValue)
-      ) {
-        return setInsideValue(min ?? insideValue);
+      if (max != null && nextValue > max) {
+        return setValue(max);
       }
 
-      if (min != null && !isNaN(min) && nextValue < min) {
-        return outsideValue != null && setOutsideValue != null
-          ? setOutsideValue(outsideValue)
-          : setInsideValue(insideValue);
-      }
-
-      if (max != null && !isNaN(max) && nextValue > max) {
-        return outsideValue != null && setOutsideValue != null
-          ? setOutsideValue(outsideValue)
-          : setInsideValue(insideValue);
-      }
-
-      return setOutsideValue != null && outsideValue != null
-        ? setOutsideValue(nextValue)
-        : setInsideValue(nextValue);
+      return setValue(nextValue);
     },
-    [outsideValue, insideValue, setOutsideValue, setInsideValue, min, max]
+    [value, setValue, min, max]
   );
 
   return (
-    <div>
+    <div onFocus={() => setIsTouched(true)}>
       <div className="flex items-center mb-2">
         <label
-          className="font-medium text-[16px] leading-none uppercase text-[#1D2E5B]"
+          className={`font-medium text-[16px] leading-none uppercase ${
+            error ? "text-[#FF0000]" : "text-[#1D2E5B]"
+          }`}
           htmlFor={id}
         >
           {label}
@@ -99,7 +63,7 @@ export const InputNumber = ({
       </div>
       <div
         className={`flex border-[1px] rounded-md bg-white text-center ${
-          errors
+          error
             ? "text-[#FF0000] border-[#FF0000]"
             : "text-[#1D2E5B] border-[#CBCED9]"
         }`}
@@ -114,17 +78,12 @@ export const InputNumber = ({
         <input
           max={max ?? ""}
           min={min ?? ""}
-          required={required}
           type="number"
           id={id}
           autoComplete="off"
           inputMode="numeric"
-          value={isNaN(finalValue) ? "" : finalValue}
-          onChange={(e) =>
-            setOutsideValue
-              ? setOutsideValue(parseInt(e.target.value))
-              : setInsideValue(parseInt(e.target.value))
-          }
+          value={isNaN(value) ? "" : value}
+          onChange={(e) => setValue(parseInt(e.target.value))}
           className="appearance-none border-none text-center bg-transparent grow shrink min-w-0 font-medium"
         />
         <button
@@ -135,9 +94,9 @@ export const InputNumber = ({
           <PlusIcon width={14} height={14} />
         </button>
       </div>
-      {errors && (
+      {error && (
         <p className="p-2 px-3 text-[#FF0000] bg-[#FFEFEF] rounded-b-md">
-          {errors}
+          {error}
         </p>
       )}
     </div>

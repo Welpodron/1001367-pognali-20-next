@@ -2,6 +2,8 @@ import { COUNTRIES_WITH_FLAGS } from "@/data/data";
 import { useState, useMemo } from "react";
 import FlagErrorIcon from "/public/icons/svg/flag-error.svg";
 
+import Image from "next/image";
+
 export const FlagIcon = ({ value }: { value: string }) => {
   const [isIconLoaded, setIsIconLoaded] = useState<boolean>(false);
   const [isIconHaveError, setIsIconHaveError] = useState<boolean>(false);
@@ -28,19 +30,21 @@ export const FlagIcon = ({ value }: { value: string }) => {
   return (
     <>
       {icon && (
-        <img
-          crossOrigin="anonymous"
-          className={`absolute object-contain ${
-            isIconLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          src={`https://countryflagsapi.com/svg/${icon}`}
-          alt={`Иконка страны ${value}`}
-          onError={() => setIsIconHaveError(true)}
-          onLoad={() => {
+        <Image
+          onLoadingComplete={() => {
             setIsIconLoaded(true);
             setIsIconHaveError(false);
           }}
-          loading="lazy"
+          onError={() => setIsIconHaveError(true)}
+          fill={true}
+          className={`absolute object-contain ${
+            isIconLoaded && !isIconHaveError ? "opacity-100" : "opacity-0"
+          }`}
+          alt={`Иконка страны ${value}`}
+          loader={({ src }) => `https://countryflagsapi.com/svg/${src}`}
+          src={icon}
+          sizes="20px"
+          crossOrigin="anonymous"
         />
       )}
       {!isIconLoaded && !isIconHaveError && icon && (

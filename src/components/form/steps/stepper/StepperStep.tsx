@@ -8,10 +8,6 @@ type StepperStepPropsType = {
   title: string;
   /** Номер шага */
   number: number;
-  /** Активный шаг или нет */
-  active?: boolean;
-  /** Завершенный шаг или нет */
-  completed?: boolean;
   /** Описание шага */
   description?: string;
 };
@@ -20,10 +16,7 @@ export const StepperStep = ({
   children,
   title,
   number,
-  active,
-  completed,
   description,
-  ...props
 }: StepperStepPropsType) => {
   const id = useId();
 

@@ -1,15 +1,18 @@
 import { useReducer, useState } from "react";
-import { StepType, StepActionType, StepperContext } from "./StepperContext";
+import {
+  StepType,
+  StepActionType,
+  StepperContext,
+  StepperContextType,
+} from "./StepperContext";
 import { StepperControls } from "./StepperControls";
 import { StepperStep } from "./StepperStep";
 import { StepperSteps } from "./StepperSteps";
 
-type StepperProps = {
+type StepperPropsType = {
   /** Контент stepper */
   children: React.ReactNode;
-  /** Номер активного шага */
-  activeStep: number;
-};
+} & Pick<StepperContextType, "activeStep">;
 
 const stepperReducer = (
   state: StepType[],
@@ -23,12 +26,17 @@ const stepperReducer = (
         return [...state, { id, ref, number }];
       }
     }
+    case "REMOVE_STEP": {
+      const { id } = payload;
+
+      return state.filter((step) => step.id !== id);
+    }
     default:
       return state;
   }
 };
 
-export const Stepper = ({ children, activeStep, ...props }: StepperProps) => {
+export const Stepper = ({ children, activeStep }: StepperPropsType) => {
   const [_activeStep, setActiveStep] = useState(activeStep);
 
   const [steps, dispatchSteps] = useReducer(stepperReducer, []);

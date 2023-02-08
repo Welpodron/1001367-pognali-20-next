@@ -1,9 +1,10 @@
-import { useCallback, useReducer, useState } from "react";
+import { useMemo, useReducer } from "react";
 
 import { setMonth, getCurrentDate } from "@/utils/time/time";
 
 import { CalendarHeader } from "./CalendarHeader";
 import { CalendarBody } from "./CalendarBody";
+import { FieldPropsGenericType } from "../Field/Field";
 
 // Использование useReducer для управления состоянием календаря в связи с тем, что в будущем возможно будет добавлено больше функционала, например, смена года
 const currentDateReducer = (state: Date, action: { type: string }) => {
@@ -17,56 +18,33 @@ const currentDateReducer = (state: Date, action: { type: string }) => {
   }
 };
 
-export type CalendarPropsType = {
-  /** Откуда начинается отсчет календаря (какая дата является текущий в настоящий момент времени) */
-  initialValue?: Date;
-  /** Контроль извне */
-  state?: [
-    [Date | null, Date | null],
-    (value: [Date | null, Date | null]) => void
-  ];
-};
+export type CalendarPropsType = {};
 
 export const Calendar = ({
   state,
-  initialValue = getCurrentDate(),
-}: CalendarPropsType) => {
+  touched,
+  errors: error,
+}: CalendarPropsType & FieldPropsGenericType<[Date | null, Date | null]>) => {
+  const todayDate = useMemo(() => getCurrentDate(), []);
+
   const [currentDate, dispatchCurrentDate] = useReducer(
     currentDateReducer,
-    initialValue
+    getCurrentDate()
   );
 
-  const [insideValue, setInsideValue] = useState<[Date | null, Date | null]>([
-    currentDate,
-    currentDate,
-  ]);
-
-  const [outsideValue, setOutsideValue] = state ?? [];
-
-  const finalValue =
-    outsideValue != null && setOutsideValue != null
-      ? outsideValue
-      : insideValue;
-
-  const setValue = useCallback(
-    (value: [Date | null, Date | null]) => {
-      return setOutsideValue != null && outsideValue != null
-        ? setOutsideValue(value)
-        : setInsideValue(value);
-    },
-    [outsideValue, setOutsideValue, setInsideValue]
-  );
+  const [value, setValue] = state ?? [[null, null], () => {}];
+  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
 
   return (
-    <table className="text-center w-full">
+    <table onFocus={() => setIsTouched(true)} className="text-center w-full">
       <CalendarHeader
         calendarCurrentDate={currentDate}
         dispatchCalendarCurrentDate={dispatchCurrentDate}
       />
       <CalendarBody
-        calendarInitialDate={initialValue}
+        calendarInitialDate={todayDate}
         calendarCurrentDate={currentDate}
-        calendarValue={finalValue}
+        calendarValue={value}
         setCalendarValue={setValue}
       />
     </table>
