@@ -1,4 +1,4 @@
-import { Collapse } from "@/components/generic/collapse/collapse";
+import { Collapse } from "@/components/generic/collapse/Collapse";
 import { TRANSPORTS } from "@/data/data";
 import React, { useState, useCallback, useEffect } from "react";
 
@@ -398,7 +398,8 @@ export const Companions = () => {
             Транспорт
           </Collapse.Control>
           <Collapse.Content as="fieldset">
-            <ul className="form-features__list form-features__list--transport-list catalog-vehicles">
+            <></>
+            {/* <ul className="form-features__list form-features__list--transport-list catalog-vehicles">
               {TRANSPORTS.map((transport, index) => (
                 <li key={index}>
                   <label aria-label={transport.name}>
@@ -416,7 +417,7 @@ export const Companions = () => {
                   </label>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </Collapse.Content>
         </Collapse>
       </div>

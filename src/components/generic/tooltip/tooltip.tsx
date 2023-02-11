@@ -1,3 +1,4 @@
+import { TooltipContent } from "./TooltipContent";
 import React, {
   Children,
   cloneElement,
@@ -6,11 +7,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-
 import { createPortal } from "react-dom";
 
-import { TooltipContent } from "./TooltipContent";
-
+// TODO: Активация тултипа по клику, фокусу и тд
+// TODO: Кастомный тег путем полиморфизма
+// TODO: Передача кастомного класса и стилей
+// TODO: Необходимо доработать механизм выбора стратегии также как в Popover
+// Например, тутлтип можно рендерить в портале, а можно внутри родительского элемента
 export type TooltipPropsType = {
   /**
    * Элемент на который будет навешиваться тултип
@@ -28,13 +31,24 @@ export const Tooltip = ({ children, text }: TooltipPropsType) => {
   const anchor = Children.only(children) as React.ReactElement;
   const anchorRef = useRef<HTMLElement>(null);
 
-  const handleMouseEnter = useCallback(() => {
-    setIsAnchorHovering(true);
-  }, [setIsAnchorHovering]);
-
   const handleMouseLeave = useCallback(() => {
     setIsAnchorHovering(false);
   }, [setIsAnchorHovering]);
+
+  const handleWindowResize = useCallback(() => {
+    setIsAnchorHovering(false);
+  }, [setIsAnchorHovering]);
+
+  const handleMouseEnter = useCallback(() => {
+    if (!anchorRef || !anchorRef.current) {
+      return;
+    }
+    setIsAnchorHovering(true);
+    window.addEventListener("resize", handleWindowResize, { once: true });
+    anchorRef.current.addEventListener("mouseleave", handleMouseLeave, {
+      once: true,
+    });
+  }, [setIsAnchorHovering, anchorRef, handleWindowResize, handleMouseLeave]);
 
   useEffect(() => {
     if (!anchorRef || !anchorRef.current) {
@@ -44,17 +58,14 @@ export const Tooltip = ({ children, text }: TooltipPropsType) => {
     const _anchorRef = anchorRef.current;
 
     _anchorRef.addEventListener("mouseenter", handleMouseEnter);
-    _anchorRef.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       if (!_anchorRef) {
         return;
       }
-
       _anchorRef.removeEventListener("mouseenter", handleMouseEnter);
-      _anchorRef.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [anchorRef, handleMouseEnter, handleMouseLeave]);
+  }, [anchorRef, handleMouseEnter]);
 
   const anchorWithRef = cloneElement(anchor, {
     ref: anchorRef,

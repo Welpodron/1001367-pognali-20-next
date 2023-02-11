@@ -1,7 +1,6 @@
+import { CollapseContext } from "./CollapseContext";
 import { polymorphize } from "@/utils/polymorphize/polymorphize";
-
 import React, { forwardRef, useCallback, useContext, useEffect } from "react";
-import { CollapseContext } from "./collapseContext";
 
 type collapseActions = "toggle" | "open" | "close";
 

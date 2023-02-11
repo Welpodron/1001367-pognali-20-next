@@ -1,5 +1,7 @@
-import { useContext, useEffect, useId, useRef, useState } from "react";
 import { StepType, StepperContext } from "./StepperContext";
+import StepperStyles from "./StepperStyles";
+import ArrowRightIcon from "/public/icons/svg/1D2E5B-utils-triangle-arrow-right.svg";
+import { useContext, useEffect, useId, useRef, useState } from "react";
 
 type StepperStepPropsType = {
   /** Контент stepper */
@@ -10,6 +12,8 @@ type StepperStepPropsType = {
   number: number;
   /** Описание шага */
   description?: string;
+  /** Ошибки шага */
+  errors?: any[];
 };
 
 export const StepperStep = ({
@@ -17,6 +21,7 @@ export const StepperStep = ({
   title,
   number,
   description,
+  errors,
 }: StepperStepPropsType) => {
   const id = useId();
 
@@ -37,6 +42,14 @@ export const StepperStep = ({
       dispatchSteps({ type: "REMOVE_STEP", payload: { id, ref, number } });
     };
   }, [dispatchSteps, id, ref, number]);
+
+  // Обновление ошибок шага TODO: Rework!
+  useEffect(() => {
+    dispatchSteps({
+      type: "UPDATE_STEP",
+      payload: { id, ref: { current: null }, number: -1, errors },
+    });
+  }, [dispatchSteps, id, errors]);
 
   useEffect(() => {
     const nextStepIndex = steps.findIndex((step) => step.id === id) + 1;
@@ -67,47 +80,73 @@ export const StepperStep = ({
     }
   }, [steps, setPrevStep, setNextStep, setIsFirstStep, setIsLastStep, id]);
 
+  const { className } = StepperStyles;
+
   return activeStep === number ? (
-    <li
-      ref={ref}
-      id={`form-steps-${id}`}
-      className="p-5 space-y-5 bg-white rounded-xl"
-    >
-      <p className="text-[#1D2E5B] font-bold text-[20px] leading-none">
-        Шаг {number}. <br /> {title}
-      </p>
-      <p className="text-[16px] leading-[22px] text-[#444444]">{description}</p>
-      <div className="space-y-5">{children}</div>
-      <nav className="space-y-2">
-        {isLastStep ? (
-          <button
-            className="bg-[#FFD74B] px-4 py-3 rounded-full w-full uppercase font-bold text-[17px] leading-[17px] block text-center"
-            type="submit"
-          >
-            Отправить
-          </button>
-        ) : (
-          nextStep && (
-            <a
-              onClick={() => setActiveStep(nextStep.number)}
-              href={nextStep ? `#form-steps-${nextStep.id}` : "#"}
-              className="bg-[#FFD74B] px-4 py-3 rounded-full w-full uppercase font-bold text-[17px] leading-[17px] block text-center"
-            >
-              Следующий шаг
-            </a>
-          )
-        )}
-        {!isFirstStep && prevStep && (
-          <a
-            href={prevStep ? `#form-steps-${prevStep.id}` : "#"}
-            onClick={() => setActiveStep(prevStep.number)}
-            className="px-4 py-3 rounded-full w-full uppercase font-bold text-[17px] leading-[17px] block text-center"
-          >
-            На шаг назад
-          </a>
-        )}
-      </nav>
-    </li>
+    <>
+      <li
+        ref={ref}
+        id={`form-steps-${id}`}
+        className={`${className} stepper__list-item`}
+      >
+        <p className={`${className} stepper__step-title`}>
+          Шаг {number}. <br /> {title}
+        </p>
+        <p className={`${className} stepper__step-description`}>
+          {description}
+        </p>
+        <div className={`${className} stepper__step-content`}>{children}</div>
+        <nav className={`${className} stepper__step-nav`}>
+          <ol className={`${className} stepper__step-nav-list`}>
+            {isLastStep ? (
+              <li className={`${className} stepper__step-nav-list-item`}>
+                <button
+                  className={`${className} stepper__step-nav-link stepper__step-nav-link--next stepper__step-nav-link--last`}
+                  type="submit"
+                >
+                  <span className="pr-2 truncate">Отправить</span>
+                  <ArrowRightIcon
+                    className="shrink-0 ml-auto"
+                    width={14}
+                    height={14}
+                    fill="currentColor"
+                  />
+                </button>
+              </li>
+            ) : (
+              nextStep && (
+                <li className={`${className} stepper__step-nav-list-item`}>
+                  <a
+                    onClick={() => setActiveStep(nextStep.number)}
+                    href={nextStep ? `#form-steps-${nextStep.id}` : "#"}
+                    className={`${className} stepper__step-nav-link stepper__step-nav-link--next`}
+                  >
+                    <span className="pr-2 truncate">Следующий шаг</span>
+                    <ArrowRightIcon
+                      className="shrink-0 ml-auto"
+                      width={14}
+                      height={14}
+                      fill="currentColor"
+                    />
+                  </a>
+                </li>
+              )
+            )}
+            {!isFirstStep && prevStep && (
+              <li className={`${className} stepper__step-nav-list-item`}>
+                <a
+                  href={prevStep ? `#form-steps-${prevStep.id}` : "#"}
+                  onClick={() => setActiveStep(prevStep.number)}
+                  className={`${className} stepper__step-nav-link stepper__step-nav-link--prev`}
+                >
+                  <span>На шаг назад</span>
+                </a>
+              </li>
+            )}
+          </ol>
+        </nav>
+      </li>
+    </>
   ) : (
     <></>
   );

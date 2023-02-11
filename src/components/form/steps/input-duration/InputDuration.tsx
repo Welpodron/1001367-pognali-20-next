@@ -1,20 +1,11 @@
-import { useCallback } from "react";
-
-import { getDaysBetween, getMinDate, setDay } from "@/utils/time/time";
-
-import {
-  Calendar,
-  CalendarPropsType,
-} from "@/components/generic/forms/Calendar/Calendar";
 import {
   InputNumber,
   InputNumberPropsType,
 } from "@/components/form/steps/input-number/InputNumber";
-import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
-
-export type InputDurationPropsType = {} & CalendarPropsType &
-  InputNumberPropsType &
-  FieldPropsGenericType<[Date | null, Date | null]>;
+import { FieldPropsGenericType } from "@/components/generic/forms/_field/Field";
+import { Calendar } from "@/components/generic/forms/calendar/Calendar";
+import { getDaysBetween, getMinDate, setDay } from "@/utils/time/time";
+import { useCallback } from "react";
 
 export const InputDuration = ({
   label,
@@ -24,8 +15,9 @@ export const InputDuration = ({
   state,
   touched,
   errors,
-}: InputDurationPropsType) => {
-  const [value, setValue] = state ?? [[null, null], () => {}];
+}: InputNumberPropsType &
+  FieldPropsGenericType<[Date | null, Date | null]>) => {
+  const [value, setValue] = state;
 
   const handleInputChange = useCallback(
     (_value: number) => {

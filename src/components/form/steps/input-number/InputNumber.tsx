@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useId, useRef } from "react";
-
-import PlusIcon from "/public/icons/svg/plus.svg";
+import InputNumberStyles from "./InputNumberStyles";
 import MinusIcon from "/public/icons/svg/minus.svg";
-import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
+import PlusIcon from "/public/icons/svg/plus.svg";
+import { FieldPropsGenericType } from "@/components/generic/forms/_field/Field";
+import { clsx } from "clsx";
+import { useCallback, useId } from "react";
 
 export type InputNumberPropsType = {
   /** Единица измерения инпута */
@@ -29,24 +30,8 @@ export const InputNumber = ({
 }: InputNumberPropsType & FieldPropsGenericType<number>) => {
   const id = useId();
 
-  const [value, setValue] = state ?? [NaN, () => {}];
-  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
-
-  const ref = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!ref || !ref.current) {
-      return;
-    }
-
-    if (error) {
-      ref.current.setCustomValidity(error as unknown as string);
-    } else {
-      ref.current.setCustomValidity("");
-    }
-
-    ref.current.reportValidity();
-  }, [ref, error]);
+  const [value, setValue] = state;
+  const [, setIsTouched] = touched;
 
   const handleControlClick = useCallback(
     (addition: number) => {
@@ -66,61 +51,59 @@ export const InputNumber = ({
   );
 
   return (
-    <div onFocus={() => setIsTouched(true)}>
-      <div className="flex items-center mb-2">
-        <label
-          className={`font-medium text-[16px] leading-none uppercase ${
-            error ? "text-[#FF0000]" : "text-[#1D2E5B]"
-          }`}
-          htmlFor={id}
+    <>
+      <style jsx>{InputNumberStyles}</style>
+      <div className="field" onFocus={() => setIsTouched(true)}>
+        <div className="field__label">
+          <label
+            className={clsx(
+              `field__label-text`,
+              error ? "text-[#FF0000]" : "text-[#1D2E5B]"
+            )}
+            htmlFor={id}
+          >
+            {label}
+          </label>
+          <span className="field__label-measure">{measure}</span>
+        </div>
+        <div
+          className={clsx(
+            `field__input-container`,
+            error
+              ? "text-[#FF0000] border-[#FF0000]"
+              : "text-[#1D2E5B] border-[#CBCED9]"
+          )}
         >
-          {label}
-        </label>
-        <span className="font-medium text-[16px] leading-none uppercase text-[#1D2E5B] opacity-30 text-right ml-auto shrink-0">
-          {measure}
-        </span>
+          <button
+            className="field__input-control"
+            type="button"
+            onClick={() => handleControlClick(-1)}
+          >
+            <MinusIcon width={14} height={1} />
+          </button>
+          <input
+            max={max ?? ""}
+            min={min ?? ""}
+            required={required ?? false}
+            type="number"
+            id={id}
+            autoComplete="off"
+            inputMode="numeric"
+            value={isNaN(value) ? "" : value}
+            onChange={(event) => setValue(parseInt(event.currentTarget.value))}
+            className="field__input"
+          />
+          <button
+            className="field__input-control"
+            onClick={() => handleControlClick(1)}
+            type="button"
+          >
+            <PlusIcon width={14} height={14} />
+          </button>
+        </div>
+        {error && <p className="field__error">{error}</p>}
       </div>
-      <div
-        className={`flex border-[1px] rounded-md bg-white text-center ${
-          error
-            ? "text-[#FF0000] border-[#FF0000]"
-            : "text-[#1D2E5B] border-[#CBCED9]"
-        }`}
-      >
-        <button
-          className="bg-transparent p-4 shrink-0"
-          type="button"
-          onClick={() => handleControlClick(-1)}
-        >
-          <MinusIcon width={14} height={1} />
-        </button>
-        <input
-          max={max ?? ""}
-          min={min ?? ""}
-          required={required ?? false}
-          type="number"
-          ref={ref}
-          id={id}
-          autoComplete="off"
-          inputMode="numeric"
-          value={isNaN(value) ? "" : value}
-          onChange={(e) => setValue(parseInt(e.target.value))}
-          className="appearance-none border-none text-center bg-transparent grow shrink min-w-0 font-medium"
-        />
-        <button
-          className="bg-transparent p-4 shrink-0"
-          onClick={() => handleControlClick(1)}
-          type="button"
-        >
-          <PlusIcon width={14} height={14} />
-        </button>
-      </div>
-      {error && (
-        <p className="p-2 px-3 text-[#FF0000] bg-[#FFEFEF] rounded-b-md">
-          {error}
-        </p>
-      )}
-    </div>
+    </>
   );
 };
 

@@ -1,70 +1,64 @@
-import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
+import InputRoutesActivitiesTextareaStyles from "./InputRoutesActivitiesTextareaStyles";
+import { ComponentPropsGenericType } from "@/components/generic/_component/Component";
+import { FieldPropsGenericType } from "@/components/generic/forms/_field/Field";
 import { FlagIcon } from "@/components/global/icons/Flag";
-import { useRef, useEffect } from "react";
+import { clsx } from "clsx";
+import { forwardRef } from "react";
 
-export type InputRoutesCountriesTextareaPropsType = {
+export type InputRoutesActivitiesTextareaPropsType = {
   /**
    * Страна
    */
   country: string;
 };
 
-export const InputRoutesCountriesTextarea = ({
-  country,
-  state,
-  touched,
-  errors: error,
-}: InputRoutesCountriesTextareaPropsType &
-  FieldPropsGenericType<null | string>) => {
-  const [value, setValue] = state ?? [null, () => {}];
-  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
-
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (!ref || !ref.current) {
-      return;
-    }
-
-    if (error) {
-      ref.current.setCustomValidity(error as unknown as string);
-    } else {
-      ref.current.setCustomValidity("");
-    }
-
-    ref.current.reportValidity();
-  }, [ref, error]);
+// ForwardRef использовался как тестовый пример передачи рефа из useForm в компонент, пока что не используется, однако работает
+export const InputRoutesActivitiesTextarea = forwardRef<
+  HTMLTextAreaElement,
+  ComponentPropsGenericType &
+    InputRoutesActivitiesTextareaPropsType &
+    FieldPropsGenericType<null | string>
+>(({ country, state, touched, className, errors: error }, ref) => {
+  const [value, setValue] = state;
+  const [, setIsTouched] = touched;
+  const { className: _className, styles } = InputRoutesActivitiesTextareaStyles;
 
   return (
-    <label className="form-routes-activity-field">
-      <span className="form-routes-activity-field-label">
-        <span className={`pr-2 truncate ${error ? "text-[#FF0000]" : ""}`}>
-          {country}
+    <>
+      {styles}
+      <label className={clsx(`${_className} field`, className)}>
+        <span className={`${_className} field__label`}>
+          <span
+            className={clsx(
+              `${_className} field__label-text`,
+              error ? "text-[#FF0000]" : "text-blue-light-1"
+            )}
+          >
+            {country}
+          </span>
+          <span className={`${_className} field__input-flag`}>
+            <FlagIcon value={country} />
+          </span>
         </span>
-        <span className="relative w-[35px] h-[24px] rounded overflow-hidden grid place-items-center place-content-center ml-auto shrink-0">
-          <FlagIcon value={country} />
-        </span>
-      </span>
-      <textarea
-        className={`rounded-md border-[1px] p-2 w-full min-h-[150px] block ${
-          error
-            ? "border-[#FF0000] border-b-0 rounded-b-none text-[#FF0000]"
-            : "border-[#CBCED9]"
-        }`}
-        ref={ref}
-        value={value ?? ""}
-        onFocus={() => setIsTouched(true)}
-        onChange={(e: React.ChangeEvent) =>
-          setValue((e.target as HTMLTextAreaElement).value)
-        }
-      ></textarea>
-      {error && (
-        <span className="p-2 px-3 text-[#FF0000] bg-[#FFEFEF] border-[1px] border-t-0 border-[#FF0000] rounded-b-md block">
-          {error}
-        </span>
-      )}
-    </label>
+        <textarea
+          ref={ref}
+          className={clsx(
+            `${_className} field__input`,
+            error
+              ? "border-[#FF0000] border-b-0 rounded-b-none text-[#FF0000]"
+              : "border-[#CBCED9]"
+          )}
+          value={value ?? ""}
+          onFocus={() => setIsTouched(true)}
+          placeholder="План действий"
+          onChange={(event: React.ChangeEvent) =>
+            setValue((event.currentTarget as HTMLTextAreaElement).value)
+          }
+        ></textarea>
+        {error && <span className={`${_className} field__error`}>{error}</span>}
+      </label>
+    </>
   );
-};
+});
 
-InputRoutesCountriesTextarea.displayName = "Input.Routes.Countries.Textarea";
+InputRoutesActivitiesTextarea.displayName = "Input.Routes.Activities.Textarea";

@@ -1,8 +1,8 @@
-import { COUNTRIES_WITH_FLAGS } from "@/data/data";
-import { useState, useMemo } from "react";
 import FlagErrorIcon from "/public/icons/svg/flag-error.svg";
-
+import { Tooltip } from "@/components/generic/tooltip/Tooltip";
+import { COUNTRIES_WITH_FLAGS } from "@/data/data";
 import Image from "next/image";
+import { useState, useMemo } from "react";
 
 export const FlagIcon = ({ value }: { value: string }) => {
   const [isIconLoaded, setIsIconLoaded] = useState<boolean>(false);
@@ -37,12 +37,12 @@ export const FlagIcon = ({ value }: { value: string }) => {
           }}
           onError={() => setIsIconHaveError(true)}
           fill={true}
-          className={`absolute object-contain ${
+          className={`absolute object-cover ${
             isIconLoaded && !isIconHaveError ? "opacity-100" : "opacity-0"
           }`}
           alt={`Иконка страны ${value}`}
           loader={({ src }) => `https://countryflagsapi.com/svg/${src}`}
-          src={icon}
+          src={`https://countryflagsapi.com/svg/${icon}`}
           sizes="20px"
           crossOrigin="anonymous"
         />
@@ -50,7 +50,7 @@ export const FlagIcon = ({ value }: { value: string }) => {
       {!isIconLoaded && !isIconHaveError && icon && (
         <svg
           aria-hidden="true"
-          className="text-gray-200 animate-spin fill-[#1D2E5B]"
+          className="text-gray-dark-2 animate-spin fill-blue-light-1 absolute w-3/4 h-3/4"
           viewBox="0 0 100 101"
           fill="none"
           width={20}
@@ -67,7 +67,15 @@ export const FlagIcon = ({ value }: { value: string }) => {
           />
         </svg>
       )}
-      {(isIconHaveError || !icon) && <FlagErrorIcon width={35} height={24} />}
+      {(isIconHaveError || !icon) && (
+        <Tooltip text="Флаг не найден">
+          <FlagErrorIcon
+            className="w-full h-full absolute"
+            width={35}
+            height={24}
+          />
+        </Tooltip>
+      )}
     </>
   );
 };

@@ -1,13 +1,9 @@
 // Routes block start
-
-import React from "react";
-
-import { ROUTES, COUNTRIES } from "@/data/data";
-
-import UserIcon from "/public/icons/svg/192144-icon-user-spd.svg";
 import ArrowRightIcon from "/public/icons/svg/1D2E5B-utils-triangle-arrow-right.svg";
-
+import UserIcon from "/public/icons/svg/192144-icon-user-spd.svg";
+import { ROUTES, COUNTRIES } from "@/data/data";
 import Image from "next/image";
+import React from "react";
 
 export const Routes = () => {
   return (
@@ -38,12 +34,12 @@ export const Routes = () => {
                 />
               </div>
               <div className="p-5 rounded-xl bg-white -mt-3 relative flex items-start md:flex-col md:grow md:mt-0 md:rounded-r-none md:p-8">
-                {COUNTRIES.find((c) => c.name === route.name)?.icon({
+                {/* {COUNTRIES.find((c) => c.name === route.name)?.icon({
                   width: 35,
                   height: 25,
                   className:
                     "absolute bottom-full translate-y-1/2 md:bottom-2/3 md:left-full md:-translate-x-1/2 md:w-16 md:h-16",
-                })}
+                })} */}
                 <div className="mr-2 md:mr-0">
                   <h3 className="font-bold text-xl mb-2 md:text-[24px] md:leading-[24px]">
                     {route.name}

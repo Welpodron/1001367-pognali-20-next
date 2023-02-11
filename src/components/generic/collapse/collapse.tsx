@@ -1,8 +1,7 @@
+import { CollapseContent as Content } from "./CollapseContent";
+import { CollapseContext as Context } from "./CollapseContext";
+import { CollapseControl as Control } from "./CollapseControl";
 import { useState } from "react";
-
-import { CollapseContent as Content } from "./collapseContent";
-import { CollapseContext as Context } from "./collapseContext";
-import { CollapseControl as Control } from "./collapseControl";
 
 type CollapseProps = {
   /** default children */

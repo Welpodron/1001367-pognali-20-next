@@ -11,6 +11,65 @@ export const getCurrentDate = (): Date =>
   new Date(new Date().setHours(0, 0, 0, 0));
 
 /**
+ * Функция возвращает вчерашнюю дату без времени
+ * @returns {Date} вчерашняя дата без времени
+ */
+export const getYesterdayDate = (): Date => {
+  const date = getCurrentDate();
+  date.setDate(date.getDate() - 1);
+  return date;
+};
+
+/**
+ * Функция возвращает завтрашнюю дату без времени
+ * @returns {Date} завтрашняя дата без времени
+ */
+export const getTomorrowDate = (): Date => {
+  const date = getCurrentDate();
+  date.setDate(date.getDate() + 1);
+  return date;
+};
+
+/**
+ * Функция возвращает название месяца
+ * @param {Object} options - объект с параметрами
+ * @param {number} [options.year] - год
+ * @param {number} [options.month] - месяц
+ * @param {Date} [options.date] - дата
+ * @param {number} [options.day] - день
+ * @param {Intl.LocalesArgument} options.locale - локаль
+ * @param {"long" | "short"} [options.style] - стиль названия месяца
+ * @returns {string} название месяца
+ */
+export const getMonthName = ({
+  date,
+  month,
+  locale,
+  style = "short",
+  year,
+  day,
+}: {
+  year?: number;
+  month?: number;
+  date?: Date;
+  day?: number;
+  locale: Intl.LocalesArgument;
+  style?: "long" | "short" | "narrow";
+}): string => {
+  let _date = getCurrentDate();
+
+  if (year && month) {
+    _date = new Date(year, month, day || 1);
+  }
+
+  if (date) {
+    _date = date;
+  }
+
+  return _date.toLocaleDateString(locale, { month: style });
+};
+
+/**
  * Функция возвращает массив с названиями дней недели
  * @param {Object} options - объект с параметрами
  * @param {Intl.LocalesArgument} options.locale - локаль

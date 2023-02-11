@@ -1,14 +1,13 @@
-import VkIcon from "/public/icons/svg/192144-social-vk-spd.svg";
 import FacebookIcon from "/public/icons/svg/192144-social-facebook-spd.svg";
 import InstIcon from "/public/icons/svg/192144-social-instagram-spd.svg";
-import PhoneIcon from "/public/icons/svg/STATIC-contacts-phone.svg";
+import VkIcon from "/public/icons/svg/192144-social-vk-spd.svg";
 import MailIcon from "/public/icons/svg/STATIC-contacts-mail.svg";
-
-import MenuOpenedIcon from "/public/icons/svg/icon_menu_opened.svg";
+import PhoneIcon from "/public/icons/svg/STATIC-contacts-phone.svg";
 import MenuClosedIcon from "/public/icons/svg/icon_menu_closed.svg";
-
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import MenuOpenedIcon from "/public/icons/svg/icon_menu_opened.svg";
 import { AppContext } from "@/pages/_app";
+import Link from "next/link";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 export const Header = () => {
   const [isOpened, setIsOpened] = useState<boolean>(false);
@@ -50,9 +49,9 @@ export const Header = () => {
   return (
     <header
       ref={headerRef}
-      className={`bg-[#192144] w-full z-30 top-0 left-0 ${
-        isOpened || isSticky ? "bg-white" : ""
-      } ${isSticky || isOpened ? "fixed" : "absolute"}`}
+      className={`bg-transparent w-full z-30 top-0 left-0 ${
+        isOpened ? "bg-white/90" : isSticky ? "bg-white/70" : ""
+      } ${isSticky || isOpened ? "fixed backdrop-blur-sm" : "absolute"}`}
     >
       <div className="p-5">
         <div className="flex">
@@ -67,15 +66,15 @@ export const Header = () => {
         </div>
         <div className={`space-y-5 pt-5 ${isOpened ? "" : "hidden"}`}>
           <nav className="text-center text-[#192144] uppercase font-medium text-[30px] leading-[35px]">
-            <ul>
+            <ul className="grid gap-2">
               <li>
-                <a href="">О сервисе</a>
+                <Link href="/">О сервисе</Link>
               </li>
               <li>
-                <a href="">Направления</a>
+                <Link href="/form">Направления</Link>
               </li>
               <li>
-                <a href="">Попутчики</a>
+                <Link href="/catalog">Попутчики</Link>
               </li>
             </ul>
           </nav>

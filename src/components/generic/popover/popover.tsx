@@ -1,8 +1,7 @@
-import { useRef, useState } from "react";
-
-import { PopoverContextType, PopoverContext } from "./PopoverContext";
 import { PopoverContent } from "./PopoverContent";
+import { PopoverContextType, PopoverContext } from "./PopoverContext";
 import { PopoverControl } from "./PopoverControl";
+import { useRef, useState } from "react";
 
 type PopoverPropsType = {
   /**
@@ -18,6 +17,7 @@ type PopoverPropsType = {
   "controlRef" | "contentRef" | "isOpened" | "setIsOpened"
 >;
 
+// TODO: Возможность сокрытия открытия на hover
 export const Popover = ({
   children,
   trapFocus = false,

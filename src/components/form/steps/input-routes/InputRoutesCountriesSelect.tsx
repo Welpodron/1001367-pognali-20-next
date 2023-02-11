@@ -1,13 +1,12 @@
-import { useMemo, useRef, useState } from "react";
-
-import { COUNTRIES_ALL_RAW } from "@/data/data";
-
-import { Popover } from "@/components/generic/Popover/Popover";
-
-import { FlagIcon } from "@/components/global/icons/Flag";
+import InputRoutesCountriesSelectStyles from "./InputRoutesCountriesSelectStyles";
 import DropdownIcon from "/public/icons/svg/000000-utils-dropdown-form.svg";
 import CloseIcon from "/public/icons/svg/192144-utils-close.svg";
-import { FieldPropsGenericType } from "@/components/generic/forms/Field/Field";
+import { FieldPropsGenericType } from "@/components/generic/forms/_field/Field";
+import { Popover } from "@/components/generic/popover/Popover";
+import { FlagIcon } from "@/components/global/icons/Flag";
+import { COUNTRIES_ALL_RAW } from "@/data/data";
+import { clsx } from "clsx";
+import { useMemo, useRef, useState } from "react";
 
 export type InputRoutesCountriesSelectPropsType = {
   routes: {
@@ -26,10 +25,12 @@ export const InputRoutesCountriesSelect = ({
   errors: error,
 }: InputRoutesCountriesSelectPropsType &
   FieldPropsGenericType<null | string>) => {
-  const [isOpened, setIsOpened] = useState(false);
+  const { className, styles } = InputRoutesCountriesSelectStyles;
+  // console.log(className, styles);
 
-  const [value, setValue] = state ?? [null, () => {}];
-  const [isTouched, setIsTouched] = touched ?? [null, () => {}];
+  const [isOpened, setIsOpened] = useState(false);
+  const [value, setValue] = state;
+  const [, setIsTouched] = touched;
 
   const controlRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDialogElement>(null);
@@ -48,106 +49,118 @@ export const InputRoutesCountriesSelect = ({
     useState<string>(countriesFirstLetters[0]);
 
   return (
-    <div className="relative">
-      <Popover
-        state={[isOpened, setIsOpened]}
-        strategy="parent"
-        trapFocus={true}
-      >
-        <div className="flex">
-          <Popover.Control
-            type="button"
-            className={`border-[1px] bg-white rounded px-2 py-3 truncate text-left grow uppercase font-medium text-[14px] leading-none flex items-center ${
-              error
-                ? "text-[#FF0000] border-[#FF0000]"
-                : "text-[#1D2E5B] border-[#CBCED9]"
-            } `}
-            as="button"
-            ref={controlRef}
-            onFocus={() => setIsTouched(true)}
-          >
-            <p className="pr-2 truncate">{value ?? "Выберите страну"}</p>
-            <DropdownIcon
-              fill="currentColor"
-              width={10}
-              height={14}
-              className="ml-auto shrink-0"
-            />
-          </Popover.Control>
-          {value && (
-            <div
-              className={`border-[1px] border-l-0 rounded p-2 ${
-                error ? "border-[#FF0000]" : "border-[#CBCED9]"
-              }`}
+    <>
+      {styles}
+      <div data-active={value ? true : false} className={`${className} field`}>
+        <Popover
+          state={[isOpened, setIsOpened]}
+          strategy="parent"
+          trapFocus={true}
+        >
+          <div className={`${className} field__container`}>
+            <Popover.Control
+              type="button"
+              className={clsx(
+                `${className} field__input`,
+                error && "text-[#FF0000] border-[#FF0000]",
+                isOpened && !value
+                  ? "border-blue-light-1 bg-blue-light-1 text-white"
+                  : "text-blue-light-1 border-[#CBCED9] bg-white"
+              )}
+              as="button"
+              ref={controlRef}
+              onFocus={() => setIsTouched(true)}
             >
-              <div className="relative w-[35px] h-[24px] rounded overflow-hidden grid place-items-center place-content-center">
-                <FlagIcon value={value as string} />
+              <span className={`${className} field__input-text`}>
+                {value ?? "Выберите страну"}
+              </span>
+              <DropdownIcon
+                fill="currentColor"
+                width={10}
+                height={14}
+                className={`${className} field__input-icon`}
+              />
+            </Popover.Control>
+            <div
+              className={clsx(
+                `${className} field__input-flag-container`,
+                error ? "border-[#FF0000]" : "border-[#CBCED9]"
+              )}
+            >
+              <div className={`${className} field__input-flag`}>
+                {value && <FlagIcon value={value as string} />}
               </div>
             </div>
-          )}
-        </div>
-        {error && (
-          <p className="p-2 px-3 text-[#FF0000] bg-[#FFEFEF] rounded-b-md">
-            {error}
-          </p>
-        )}
-        <Popover.Content
-          ref={contentRef}
-          className="p-0 border-[1px] w-full border-[#CBCED9] rounded-b"
-        >
-          <div className="relative">
-            <ul className="grid grid-cols-5">
-              {countriesFirstLetters.map((letter, index) => (
-                <li className="border-[1px]" key={index}>
-                  <button
-                    className={`uppercase p-4 w-full h-full text-center text-[#1D2E5B] font-medium text-[14px] leading-none ${
-                      currentCountriesFirstLetter.toLowerCase() ===
-                      letter.toLowerCase()
-                        ? "bg-[#EDEFF6]"
-                        : "bg-white"
-                    }`}
-                    type="button"
-                    onClick={() => setCurrentCountriesFirstLetter(letter)}
-                  >
-                    {letter}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <ul className="py-4 px-2 max-h-[210px] overflow-y-scroll space-y-2 text-[#444444]">
-              {COUNTRIES_ALL_RAW.filter(
-                (country) =>
-                  country[0].toLowerCase() ===
-                    currentCountriesFirstLetter.toLowerCase() &&
-                  !routes.some((route) => route.country === country)
-              ).map((country, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => {
-                      setValue(country);
-                      setIsOpened(false);
-                    }}
-                    type="button"
-                  >
-                    {country}
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
-        </Popover.Content>
-      </Popover>
-      {routes.length > 1 && (
-        <button
-          type="button"
-          className="bg-[#EDEFF6] w-[21px] h-[21px] rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 grid place-content-center place-items-center"
-          aria-label="Удалить маршрут"
-          onClick={() => deleteRoute()}
-        >
-          <CloseIcon fill="#AFB0B5" width={9} height={9} />
-        </button>
-      )}
-    </div>
+          {error && <p className={`${className} field__error`}>{error}</p>}
+          <Popover.Content
+            ref={contentRef}
+            className="p-0 border-[1px] w-full border-[#CBCED9] rounded drop-shadow-lg"
+          >
+            <div className={`${className} field__filter-container`}>
+              <ul className={`${className} field__filter-list`}>
+                {countriesFirstLetters.map((letter, index) => (
+                  <li
+                    className={`${className} field__filter-list-item`}
+                    key={index}
+                  >
+                    <button
+                      className={clsx(
+                        `${className} field__filter-list-option`,
+                        currentCountriesFirstLetter.toLowerCase() ===
+                          letter.toLowerCase()
+                          ? "bg-blue-light-1 text-white"
+                          : "bg-white text-blue-light-1"
+                      )}
+                      type="button"
+                      onClick={() => setCurrentCountriesFirstLetter(letter)}
+                    >
+                      {letter}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <ul className={`${className} field__select-list`}>
+                {COUNTRIES_ALL_RAW.filter(
+                  (country) =>
+                    country[0].toLowerCase() ===
+                      currentCountriesFirstLetter.toLowerCase() &&
+                    !routes.some((route) => route.country === country)
+                ).map((country, index) => (
+                  <li key={index}>
+                    <button
+                      className={`${className} field__select-list-option`}
+                      onClick={() => {
+                        setValue(country);
+                        setIsOpened(false);
+                      }}
+                      type="button"
+                    >
+                      {country}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Popover.Content>
+        </Popover>
+        {routes.length > 1 && (
+          <button
+            type="button"
+            className={`${className} field__delete`}
+            aria-label="Удалить маршрут"
+            onClick={() => deleteRoute()}
+          >
+            <CloseIcon
+              fill="#CBCED9"
+              className={`${className} field__delete-icon`}
+              width={9}
+              height={9}
+            />
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 

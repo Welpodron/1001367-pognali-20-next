@@ -1,5 +1,9 @@
 import React from "react";
 
+export type PolymorphicComponentPropsGenericType = {
+  as?: any;
+};
+
 type _NativeProps<ElementType extends React.ElementType> =
   React.ComponentPropsWithoutRef<ElementType>;
 

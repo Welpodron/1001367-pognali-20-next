@@ -1,8 +1,6 @@
+import { CollapseContext } from "./CollapseContext";
 import { polymorphize } from "@/utils/polymorphize/polymorphize";
-
 import React, { forwardRef, useContext } from "react";
-
-import { CollapseContext } from "./collapseContext";
 
 type CollapseContentProps = {
   /** default children */

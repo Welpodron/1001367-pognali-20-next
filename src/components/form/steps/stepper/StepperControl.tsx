@@ -1,13 +1,17 @@
 import { StepperContextType } from "./StepperContext";
+import StepperStyles from "./StepperStyles";
+import { clsx } from "clsx";
 
-export type StepperControlProps = {
+export type StepperControlPropsType = {
   /** Идентификатор шага */
   id: string;
   /** Название шага */
   title: string;
   /** Номер шага */
   number: number;
-} & Pick<StepperContextType, "activeStep" | "setActiveStep">;
+  /** Ошибки шага */
+  errors?: any[];
+};
 
 export const StepperControl = ({
   title,
@@ -15,13 +19,19 @@ export const StepperControl = ({
   number,
   activeStep,
   setActiveStep,
-}: StepperControlProps) => {
+  errors,
+}: StepperControlPropsType &
+  Pick<StepperContextType, "activeStep" | "setActiveStep">) => {
+  const { className } = StepperStyles;
+
   return (
     <li>
       <a
-        className={`block rounded-full m-2 w-[5px] h-[5px] bg-[#1D2E5B] ${
-          number === activeStep ? "opacity-100" : "opacity-30"
-        }`}
+        className={clsx(
+          `${className} stepper__control`,
+          number === activeStep ? "opacity-100" : "opacity-30",
+          errors?.length ? "bg-[#FF0000]" : "bg-[#1D2E5B]"
+        )}
         href={`#form-steps-${id}`}
         aria-label={`Перейти на шаг ${title}`}
         onClick={() => setActiveStep(number)}

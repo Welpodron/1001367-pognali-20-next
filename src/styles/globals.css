@@ -2,6 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-style: normal;
+    font-weight: normal;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans.woff2") format("woff2"),
+      url("/fonts/bloggersans.woff") format("woff");
+  }
+  @font-face {
+    font-style: italic;
+    font-weight: normal;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-italic.woff2") format("woff2"),
+      url("/fonts/bloggersans-italic.woff") format("woff");
+  }
+
+  @font-face {
+    font-style: normal;
+    font-weight: 300;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-light.woff2") format("woff2"),
+      url("/fonts/bloggersans-light.woff") format("woff");
+  }
+  @font-face {
+    font-style: italic;
+    font-weight: 300;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-lightitalic.woff2") format("woff2"),
+      url("/fonts/bloggersans-lightitalic.woff") format("woff");
+  }
+  @font-face {
+    font-style: normal;
+    font-weight: 500;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-medium.woff2") format("woff2"),
+      url("/fonts/bloggersans-medium.woff") format("woff");
+  }
+  @font-face {
+    font-style: italic;
+    font-weight: 500;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-mediumitalic.woff2") format("woff2"),
+      url("/fonts/bloggersans-mediumitalic.woff") format("woff");
+  }
+  @font-face {
+    font-style: normal;
+    font-weight: bold;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-bold.woff2") format("woff2"),
+      url("/fonts/bloggersans-bold.woff") format("woff");
+  }
+  @font-face {
+    font-style: italic;
+    font-weight: bold;
+    font-family: "BloggerSans";
+    font-display: swap;
+    src: url("/fonts/bloggersans-bolditalic.woff2") format("woff2"),
+      url("/fonts/bloggersans-bolditalic.woff") format("woff");
+  }
+  html {
+    font-family: "BloggerSans", sans-serif !important;
+    scroll-behavior: smooth !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
 @layer components {
   .index-prices-items {
     counter-reset: index-prices-item;
@@ -9,7 +82,7 @@
   .index-prices-item::after {
     counter-increment: index-prices-item;
     content: counter(index-prices-item);
-    @apply w-10 h-10 shrink-0 ml-auto grid text-center place-content-center place-items-center rounded-full text-white;
+    @apply ml-auto grid h-10 w-10 shrink-0 place-content-center place-items-center rounded-full text-center text-white;
   }
   .index-prices-item:nth-child(n)::after {
     @apply bg-[#FF8D30];
@@ -25,7 +98,7 @@
     counter-reset: index-promo-item;
   }
   .index-promo-item {
-    @apply flex rounded-xl px-5 py-6 pb-11 -mt-5;
+    @apply -mt-5 flex rounded-xl px-5 py-6 pb-11;
   }
   .index-promo-item:last-child {
     @apply pb-7;
@@ -36,7 +109,7 @@
   .index-promo-item::after {
     counter-increment: index-promo-item;
     content: counter(index-promo-item);
-    @apply text-white shrink-0 ml-auto;
+    @apply ml-auto shrink-0 text-white;
   }
   .index-promo-item:nth-child(n) {
     @apply bg-[#FF8D30];
@@ -49,56 +122,5 @@
   }
   .index-promo-item:nth-child(4n) {
     @apply bg-[#FFD74B];
-  }
-
-  .form-calendar-control {
-    @apply bg-white opacity-30 cursor-default relative border-[#D6D9E6] border-[1px] text-[#444444] p-1 w-full h-full;
-  }
-
-  .form-calendar-control-row:not(:first-child) {
-    @apply mt-[-3px];
-  }
-
-  .form-calendar-control-cell {
-    @apply ml-[-3px];
-  }
-
-  .form-calendar-control[data-allowed="true"] {
-    @apply bg-[#EDEFF6] text-[#1D2E5B] opacity-100 font-medium cursor-pointer;
-  }
-
-  .form-calendar-control[data-in-range="true"] {
-    @apply bg-[#1D2E5B] text-white border-[#1D2E5B] opacity-100;
-  }
-
-  .form-calendar-control[data-selected="true"] {
-    @apply border-[#FF5C23] border-[2px] z-[2] opacity-100;
-  }
-
-  .form-routes-activity-field {
-    @apply relative block;
-  }
-
-  .form-routes-activity-field-label {
-    @apply text-[#1D2E5B] font-medium text-[18px] leading-none relative flex items-center mb-2;
-  }
-
-  .form-routes-activity-field:not(:only-child)
-    .form-routes-activity-field-label {
-    @apply pl-2;
-  }
-
-  .form-routes-activity-field:not(:only-child)
-    .form-routes-activity-field-label::before {
-    @apply content-[""] absolute block top-1/2 -translate-y-1/2 left-0 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-[#1D2E5B];
-  }
-
-  .form-routes-activity-field:not(:only-child)
-    .form-routes-activity-field-label::after {
-    @apply content-[""] absolute block top-1/2 -translate-y-1/2 right-full w-[15px] h-[2px] bg-[#1D2E5B];
-  }
-
-  .form-routes-activity-field:not(:last-child)::before {
-    @apply content-[""] absolute block top-3 right-full left-[-15px] w-[2px] h-[calc(100%+7px)] bg-[#1D2E5B];
   }
 }

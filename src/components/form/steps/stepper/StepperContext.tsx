@@ -7,6 +7,8 @@ export type StepType = {
   number: number;
   /** Ссылка на элемент */
   ref: React.RefObject<HTMLLIElement>;
+  /** Ошибки шага */
+  errors?: any[];
 };
 
 export type StepActionType = {

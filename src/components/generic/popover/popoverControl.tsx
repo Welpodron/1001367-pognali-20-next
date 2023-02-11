@@ -1,9 +1,12 @@
-import { useMergedRefs } from "@/hooks/use-merged-refs/use-merged-refs";
-import { polymorphize } from "@/utils/polymorphize/polymorphize";
-import { forwardRef, useContext } from "react";
 import { PopoverContext } from "./PopoverContext";
+import { useMergedRefs } from "@/hooks/use-merged-refs/use-merged-refs";
+import {
+  polymorphize,
+  PolymorphicComponentPropsGenericType,
+} from "@/utils/polymorphize/polymorphize";
+import { forwardRef, useContext } from "react";
 
-type PopoverControlPropsType = {
+export type PopoverControlPropsType = {
   /**
    * Контент, который будет отображаться внутри popover.control
    */
@@ -12,7 +15,7 @@ type PopoverControlPropsType = {
 
 const _PopoverControl = forwardRef<
   HTMLButtonElement,
-  PopoverControlPropsType & { as?: any }
+  PopoverControlPropsType & PolymorphicComponentPropsGenericType
 >(({ children, as = "button", ...props }, ref) => {
   const { isOpened, setIsOpened, controlRef } = useContext(PopoverContext);
 

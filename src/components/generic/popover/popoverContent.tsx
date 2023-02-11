@@ -1,3 +1,5 @@
+import { PopoverContentWrapper } from "./PopoverContentWrapper";
+import { PopoverContext } from "./PopoverContext";
 import { useMergedRefs } from "@/hooks/use-merged-refs/use-merged-refs";
 import {
   forwardRef,
@@ -7,8 +9,6 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { createPortal } from "react-dom";
-import { PopoverContext } from "./PopoverContext";
 
 export type PopoverContentPropsType = {
   /**
@@ -19,21 +19,6 @@ export type PopoverContentPropsType = {
    * Дополнительный класс для контента
    * */
   className?: string;
-};
-
-const PopoverContentWrapper = ({
-  children,
-  strategy,
-}: {
-  children: React.ReactNode;
-  strategy?: "parent" | "portal";
-}) => {
-  // `typeof window === "undefined"` - проверка на то, что код выполняется на сервере
-  return strategy === "parent" || typeof window === "undefined" ? (
-    <>{children}</>
-  ) : (
-    createPortal(children, document.body)
-  );
 };
 
 export const PopoverContent = forwardRef<
@@ -158,7 +143,9 @@ export const PopoverContent = forwardRef<
       !contentRef ||
       !contentRef.current ||
       !controlRef ||
-      !controlRef.current
+      !controlRef.current ||
+      !firstFocusableElementRef ||
+      !firstFocusableElementRef.current
     ) {
       return;
     }
@@ -166,7 +153,7 @@ export const PopoverContent = forwardRef<
     recalculatePosition();
 
     if (isOpened && trapFocus) {
-      contentRef.current?.focus();
+      firstFocusableElementRef.current?.focus();
     }
 
     if (isOpened) {
@@ -196,6 +183,7 @@ export const PopoverContent = forwardRef<
     contentRef,
     controlRef,
     isOpened,
+    firstFocusableElementRef,
     strategy,
     resizeObserver,
     trapFocus,

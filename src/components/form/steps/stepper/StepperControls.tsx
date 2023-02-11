@@ -1,18 +1,20 @@
-import { useContext } from "react";
 import { StepperContext } from "./StepperContext";
 import { StepperControl } from "./StepperControl";
+import StepperStyles from "./StepperStyles";
+import { useContext } from "react";
 
 export const StepperControls = () => {
   const { steps, activeStep, setActiveStep } = useContext(StepperContext);
+  const { className } = StepperStyles;
 
   return (
-    <nav className="ml-auto">
-      <ol className="flex items-center flex-wrap">
-        {steps.map(({ id, number }) => (
+    <nav>
+      <ol className={`${className} stepper__controls`}>
+        {steps.map(({ id, number, errors }) => (
           <StepperControl
             key={id}
             title={id}
-            {...{ id, number, activeStep, setActiveStep }}
+            {...{ id, number, activeStep, setActiveStep, errors }}
           />
         ))}
       </ol>

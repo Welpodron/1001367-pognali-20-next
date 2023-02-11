@@ -1,5 +1,5 @@
-import { useCallback } from "react";
-
+import CalendarStyles from "./CalendarStyles";
+import { ComponentPropsGenericType } from "@/components/generic/_component/Component";
 import {
   isDateSame,
   isDateBefore,
@@ -8,6 +8,8 @@ import {
   getMaxDate,
   isDateAfter,
 } from "@/utils/time/time";
+import { clsx } from "clsx";
+import { useCallback } from "react";
 
 export type CalendarDayPropsType = {
   /** Откуда начинается отсчет календаря (какая дата является текущий в настоящий момент времени) */
@@ -25,8 +27,9 @@ export const CalendarDay = ({
   calendarInitialDate,
   calendarValue,
   setCalendarValue,
+  className,
   ...props
-}: CalendarDayPropsType) => {
+}: ComponentPropsGenericType & CalendarDayPropsType) => {
   const handleClick = useCallback(() => {
     if (
       isDateBefore({
@@ -84,42 +87,49 @@ export const CalendarDay = ({
     }
   }, [value, calendarValue, calendarInitialDate, setCalendarValue]);
 
+  const { className: _className } = CalendarStyles;
+
   return (
-    <td className="block form-calendar-control-cell" {...props}>
-      <button
-        type="button"
-        onClick={handleClick}
-        className={`form-calendar-control`}
-        tabIndex={
-          isDateBefore({
+    <>
+      <td
+        className={clsx(`${_className} calendar__day-cell`, className)}
+        {...props}
+      >
+        <button
+          type="button"
+          onClick={handleClick}
+          className={`${_className} calendar__day`}
+          tabIndex={
+            isDateBefore({
+              compared: value,
+              border: calendarInitialDate,
+            })
+              ? -1
+              : 0
+          }
+          data-allowed={isDateAfter({
             compared: value,
             border: calendarInitialDate,
-          })
-            ? -1
-            : 0
-        }
-        data-allowed={isDateAfter({
-          compared: value,
-          border: calendarInitialDate,
-          includeBorder: true,
-        })}
-        data-selected={calendarValue.some((date) =>
-          date != null
-            ? isDateSame({ firstDate: date, secondDate: value })
-            : false
-        )}
-        data-in-range={
-          calendarValue.every((date) => date != null) &&
-          isDateBetween({
-            compared: value,
-            leftBorder: getMinDate(...(calendarValue as Date[])),
-            rightBorder: getMaxDate(...(calendarValue as Date[])),
-          })
-        }
-      >
-        {value.getDate()}
-      </button>
-    </td>
+            includeBorder: true,
+          })}
+          data-selected={calendarValue.some((date) =>
+            date != null
+              ? isDateSame({ firstDate: date, secondDate: value })
+              : false
+          )}
+          data-in-range={
+            calendarValue.every((date) => date != null) &&
+            isDateBetween({
+              compared: value,
+              leftBorder: getMinDate(...(calendarValue as Date[])),
+              rightBorder: getMaxDate(...(calendarValue as Date[])),
+            })
+          }
+        >
+          {value.getDate()}
+        </button>
+      </td>
+    </>
   );
 };
 

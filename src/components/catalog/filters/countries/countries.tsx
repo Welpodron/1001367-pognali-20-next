@@ -1,8 +1,7 @@
-import { Collapse } from "@/components/generic/collapse/collapse";
-
-import DecorationIcon from "/public/icons/svg/192144-utils-filter-spd.svg";
-import DotsIcon from "/public/icons/svg/192144-utils-dots-spd.svg";
 import CloseIcon from "/public/icons/svg/192144-utils-close.svg";
+import DotsIcon from "/public/icons/svg/192144-utils-dots-spd.svg";
+import DecorationIcon from "/public/icons/svg/192144-utils-filter-spd.svg";
+import { Collapse } from "@/components/generic/collapse/Collapse";
 import React, { useState } from "react";
 
 export const Countries = () => {

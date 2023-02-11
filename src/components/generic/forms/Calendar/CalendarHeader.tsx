@@ -1,7 +1,9 @@
-import { getWeekdaysNames } from "@/utils/time/time";
-
-import ArrowRightIcon from "/public/icons/svg/000000-utils-month-arrow-right-spd.svg";
+import CalendarStyles from "./CalendarStyles";
 import ArrowLeftIcon from "/public/icons/svg/000000-utils-month-arrow-left-spd.svg";
+import ArrowRightIcon from "/public/icons/svg/000000-utils-month-arrow-right-spd.svg";
+import { ComponentPropsGenericType } from "@/components/generic/_component/Component";
+import { getWeekdaysNames } from "@/utils/time/time";
+import { clsx } from "clsx";
 
 type CalendarHeaderPropsType = {
   /** Активная дата календаря (не текущая глобальная дата) */
@@ -16,52 +18,60 @@ export const CalendarHeader = ({
   calendarCurrentDate,
   dispatchCalendarCurrentDate,
   calendarLocale = "ru",
+  className,
   ...props
-}: CalendarHeaderPropsType) => {
+}: ComponentPropsGenericType & CalendarHeaderPropsType) => {
+  const { className: _className } = CalendarStyles;
+
   return (
-    <thead className="grid mb-2" {...props}>
-      <tr>
-        <th
-          className="flex items-center py-3 mb-2 border-t-[1px] border-b-[1px] border-[#CBCED9]"
-          colSpan={7}
-        >
-          <button
-            type="button"
-            className="p-2 px-3 shrink-0"
-            onClick={() =>
-              dispatchCalendarCurrentDate({ type: "PREVIOUS_MONTH" })
-            }
-          >
-            <ArrowLeftIcon width={9} height={18} className="opacity-30" />
-          </button>
-          <p className="capitalize grow font-bold text-[#1D2E5B] text-[20px] leading-none">
-            {calendarCurrentDate.toLocaleString(calendarLocale, {
-              month: "long",
-            })}{" "}
-            {calendarCurrentDate.getFullYear()}
-          </p>
-          <button
-            type="button"
-            className="p-2 px-3 shrink-0"
-            onClick={() => dispatchCalendarCurrentDate({ type: "NEXT_MONTH" })}
-          >
-            <ArrowRightIcon width={9} height={18} className="opacity-30" />
-          </button>
-        </th>
-      </tr>
-      <tr className="grid grid-cols-7">
-        {getWeekdaysNames({ locale: calendarLocale }).map((day, index) => (
-          <th
-            className={`capitalize text-[#444444] ${
-              index > 4 ? "text-[#FF5C23]" : ""
-            }`}
-            key={index}
-          >
-            {day}
+    <>
+      <thead
+        className={clsx(`${_className} calendar__head`, className)}
+        {...props}
+      >
+        <tr>
+          <th className={`${_className} calendar__head-controls`} colSpan={7}>
+            <button
+              type="button"
+              className={`${_className} calendar__head-control`}
+              onClick={() =>
+                dispatchCalendarCurrentDate({ type: "PREVIOUS_MONTH" })
+              }
+            >
+              <ArrowLeftIcon width={9} height={18} className="opacity-30" />
+            </button>
+            <p className={`${_className} calendar__head-month`}>
+              {calendarCurrentDate.toLocaleString(calendarLocale, {
+                month: "long",
+              })}{" "}
+              {calendarCurrentDate.getFullYear()}
+            </p>
+            <button
+              type="button"
+              className={`${_className} calendar__head-control`}
+              onClick={() =>
+                dispatchCalendarCurrentDate({ type: "NEXT_MONTH" })
+              }
+            >
+              <ArrowRightIcon width={9} height={18} className="opacity-30" />
+            </button>
           </th>
-        ))}
-      </tr>
-    </thead>
+        </tr>
+        <tr className={`${_className} calendar__head-weekdays`}>
+          {getWeekdaysNames({ locale: calendarLocale }).map((day, index) => (
+            <th
+              className={clsx(
+                `${_className} calendar__head-weekday`,
+                index > 4 && `${_className} calendar__head-weekday--weekend`
+              )}
+              key={index}
+            >
+              {day}
+            </th>
+          ))}
+        </tr>
+      </thead>
+    </>
   );
 };
 

@@ -15,19 +15,19 @@ import BicycleIcon from "/public/icons/svg/1D2E5B-transport-bike.svg";
 export const TRANSPORTS = [
   {
     name: "Самолет",
-    icon: (props?: SVGProps<SVGElement>) => <PlaneIcon {...props} />,
+    icon: PlaneIcon,
   },
   {
     name: "Автобус",
-    icon: (props?: SVGProps<SVGElement>) => <BusIcon {...props} />,
+    icon: BusIcon,
   },
   {
     name: "Велосипед",
-    icon: (props?: SVGProps<SVGElement>) => <BicycleIcon {...props} />,
+    icon: BicycleIcon,
   },
   {
     name: "Пешком",
-    icon: (props?: SVGProps<SVGElement>) => <WalkIcon {...props} />,
+    icon: WalkIcon,
   },
 ];
 

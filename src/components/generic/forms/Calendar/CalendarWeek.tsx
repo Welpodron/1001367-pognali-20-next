@@ -1,6 +1,9 @@
 import { CalendarDay } from "./CalendarDay";
+import CalendarStyles from "./CalendarStyles";
+import { ComponentPropsGenericType } from "@/components/generic/_component/Component";
+import { clsx } from "clsx";
 
-export type CalendarWeekProps = {
+export type CalendarWeekPropsType = {
   /** Активная дата календаря (не текущая глобальная дата) */
   calendarCurrentDate: Date;
   /** Откуда начинается отсчет календаря (какая дата является текущий в настоящий момент времени) */
@@ -19,29 +22,33 @@ export const CalendarWeek = ({
   calendarInitialDate,
   calendarValue,
   setCalendarValue,
+  className,
   ...props
-}: CalendarWeekProps) => {
+}: ComponentPropsGenericType & CalendarWeekPropsType) => {
+  const { className: _className } = CalendarStyles;
   return (
-    <tr
-      className="grid grid-cols-7 auto-cols-fr form-calendar-control-row"
-      {...props}
-    >
-      {value.map((day, index) =>
-        day ? (
-          <CalendarDay
-            key={"_" + day.getTime()}
-            value={day}
-            {...{
-              calendarInitialDate,
-              calendarValue,
-              setCalendarValue,
-            }}
-          />
-        ) : (
-          <td key={index} />
-        )
-      )}
-    </tr>
+    <>
+      <tr
+        className={clsx(`${_className} calendar__week`, className)}
+        {...props}
+      >
+        {value.map((day, index) =>
+          day ? (
+            <CalendarDay
+              key={"_" + day.getTime()}
+              value={day}
+              {...{
+                calendarInitialDate,
+                calendarValue,
+                setCalendarValue,
+              }}
+            />
+          ) : (
+            <td key={index} />
+          )
+        )}
+      </tr>
+    </>
   );
 };
 

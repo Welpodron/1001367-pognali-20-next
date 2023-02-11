@@ -1,4 +1,3 @@
-import { useReducer, useState } from "react";
 import {
   StepType,
   StepActionType,
@@ -8,6 +7,8 @@ import {
 import { StepperControls } from "./StepperControls";
 import { StepperStep } from "./StepperStep";
 import { StepperSteps } from "./StepperSteps";
+import StepperStyles from "./StepperStyles";
+import { useReducer, useState } from "react";
 
 type StepperPropsType = {
   /** Контент stepper */
@@ -22,11 +23,16 @@ const stepperReducer = (
 ) => {
   switch (type) {
     case "ADD_STEP": {
-      const { id, ref, number } = payload;
+      const { id, ref, number, errors } = payload;
 
       if (!state.find((step) => step.id === id)) {
-        return [...state, { id, ref, number }];
+        return [...state, { id, ref, number, errors }];
       }
+    }
+    case "UPDATE_STEP": {
+      const { id, errors } = payload;
+
+      return state.map((step) => (step.id === id ? { ...step, errors } : step));
     }
     case "REMOVE_STEP": {
       const { id } = payload;
@@ -48,6 +54,7 @@ export const Stepper = ({
   const finalValue = outsideValue ?? insideValue;
 
   const [steps, dispatchSteps] = useReducer(stepperReducer, []);
+  const { styles } = StepperStyles;
 
   return (
     <StepperContext.Provider
@@ -58,6 +65,7 @@ export const Stepper = ({
         setActiveStep: setOutsideValue ?? setInsideValue,
       }}
     >
+      {styles}
       {children}
     </StepperContext.Provider>
   );

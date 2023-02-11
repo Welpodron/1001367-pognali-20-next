@@ -1,8 +1,10 @@
-import { getCalendarPanel } from "@/utils/time/time";
-
+import CalendarStyles from "./CalendarStyles";
 import { CalendarWeek } from "./CalendarWeek";
+import { ComponentPropsGenericType } from "@/components/generic/_component/Component";
+import { getCalendarPanel } from "@/utils/time/time";
+import { clsx } from "clsx";
 
-type CalendarBodyProps = {
+type CalendarBodyPropsType = {
   /** Активная дата календаря (не текущая глобальная дата) */
   calendarCurrentDate: Date;
   /** Откуда начинается отсчет календаря (какая дата является текущий в настоящий момент времени) */
@@ -18,27 +20,35 @@ export const CalendarBody = ({
   calendarInitialDate,
   calendarValue,
   setCalendarValue,
+  className,
   ...props
-}: CalendarBodyProps) => {
+}: ComponentPropsGenericType & CalendarBodyPropsType) => {
+  const { className: _className } = CalendarStyles;
+
   return (
-    <tbody className="grid auto-rows-fr mr-[-4px]" {...props}>
-      {getCalendarPanel({
-        year: calendarCurrentDate.getFullYear(),
-        month: calendarCurrentDate.getMonth(),
-        mode: "fill",
-      }).map((week, index) => (
-        <CalendarWeek
-          key={index}
-          value={week}
-          {...{
-            calendarCurrentDate,
-            calendarInitialDate,
-            calendarValue,
-            setCalendarValue,
-          }}
-        />
-      ))}
-    </tbody>
+    <>
+      <tbody
+        className={clsx(`${_className} calendar__body`, className)}
+        {...props}
+      >
+        {getCalendarPanel({
+          year: calendarCurrentDate.getFullYear(),
+          month: calendarCurrentDate.getMonth(),
+          mode: "fill",
+        }).map((week, index) => (
+          <CalendarWeek
+            key={index}
+            value={week}
+            {...{
+              calendarCurrentDate,
+              calendarInitialDate,
+              calendarValue,
+              setCalendarValue,
+            }}
+          />
+        ))}
+      </tbody>
+    </>
   );
 };
 

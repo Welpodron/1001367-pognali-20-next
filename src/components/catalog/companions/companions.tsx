@@ -1,14 +1,9 @@
 // Companions block start
-
-import React from "react";
-
 import ArrowRightIcon from "/public/icons/svg/1D2E5B-utils-triangle-arrow-right.svg";
-
+import { Tooltip } from "@/components/generic/tooltip/Tooltip";
 import { COMPANIONS, COUNTRIES, TRANSPORTS } from "@/data/data";
-
-import { Tooltip } from "@/components/generic/Tooltip/Tooltip";
-
 import Image from "next/image";
+import React from "react";
 
 export const Companions = () => {
   return (
@@ -51,7 +46,7 @@ export const Companions = () => {
                 <p>{companion.hashtags}</p>
               </div>
               <div className="p-5 pt-0 space-y-5">
-                <ul className="space-y-3 uppercase text-[#1D2E5B] text-[15px] leading-[16px] font-medium">
+                {/* <ul className="space-y-3 uppercase text-[#1D2E5B] text-[15px] leading-[16px] font-medium">
                   {companion.countries.map((country, index) => (
                     <li key={index} className="flex items-center">
                       {COUNTRIES.find((c) => c.name === country)?.icon({
@@ -62,9 +57,9 @@ export const Companions = () => {
                       <span>{country}</span>
                     </li>
                   ))}
-                </ul>
+                </ul> */}
                 <ul className="flex">
-                  {TRANSPORTS.map((transport, index) => (
+                  {/* {TRANSPORTS.map((transport, index) => (
                     <Tooltip key={index} text={transport.name}>
                       <li className="w-[32px] h-[32px] rounded-full bg-[#EDEFF6] grid place-content-center place-items-center">
                         {transport.icon({
@@ -79,7 +74,7 @@ export const Companions = () => {
                         })}
                       </li>
                     </Tooltip>
-                  ))}
+                  ))} */}
                 </ul>
                 <button
                   className="bg-[#FFD74B] px-4 py-3 rounded-full w-full uppercase font-bold text-[17px] leading-[17px]"

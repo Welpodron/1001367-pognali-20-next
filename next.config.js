@@ -1,8 +1,11 @@
 const path = require("path");
+
 const isGithubActions = process.env.GITHUB_ACTIONS || false;
 
-let assetPrefix = "/";
-let basePath = "";
+// let assetPrefix = "/";
+// let basePath = "";
+let assetPrefix = "/welpodron.github.io/1001367-pognali-20-next/";
+let basePath = "/welpodron.github.io/1001367-pognali-20-next";
 
 if (isGithubActions) {
   const repo = process.env.GITHUB_REPOSITORY.replace(/.*?\//, "");
@@ -14,10 +17,8 @@ if (isGithubActions) {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  assetPrefix: assetPrefix,
-  basePath: basePath,
   images: {
-    unoptimized: isGithubActions ? true : false,
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -27,14 +28,16 @@ const nextConfig = {
       },
     ],
   },
-  webpack(config, { dev, isServer }) {
+  webpack(config, options) {
+    // Начало конфигурации для SVG
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       use: [{ loader: "@svgr/webpack", options: { ref: true } }],
     });
-
-    if (dev && !isServer) {
+    // Конец конфигурации для SVG
+    // Начало конфигурации для WDR
+    if (options.dev && !options.isServer) {
       const originalEntry = config.entry;
       config.entry = async () => {
         const wdrPath = path.resolve(__dirname, "./wdyr.ts");
@@ -46,6 +49,7 @@ const nextConfig = {
         return entries;
       };
     }
+    // Конец конфигурации для WDR
 
     return config;
   },

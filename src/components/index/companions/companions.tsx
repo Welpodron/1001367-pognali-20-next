@@ -1,14 +1,9 @@
 // Companions block start
-
-import React from "react";
-
 import ArrowRightIcon from "/public/icons/svg/1D2E5B-utils-triangle-arrow-right.svg";
-
+import { Tooltip } from "@/components/generic/tooltip/Tooltip";
 import { COMPANIONS, COUNTRIES, TRANSPORTS } from "@/data/data";
-
-import { Tooltip } from "@/components/generic/Tooltip/Tooltip";
-
 import Image from "next/image";
+import React from "react";
 
 export const Companions = () => {
   return (
@@ -45,7 +40,7 @@ export const Companions = () => {
                 </div>
                 <div className="p-5 grid gap-2">
                   <ul className="flex flex-wrap justify-center -mt-10 relative">
-                    {companion.countries.map((country, index) => (
+                    {/* {companion.countries.map((country, index) => (
                       <Tooltip key={index} text={country}>
                         {COUNTRIES.find((c) => c.name === country)?.icon({
                           width: 35,
@@ -53,14 +48,14 @@ export const Companions = () => {
                           className: "my-1 mx-2",
                         })}
                       </Tooltip>
-                    ))}
+                    ))} */}
                   </ul>
                   <a className="font-bold text-2xl" href="#">
                     {companion.name}
                   </a>
                   <p>{companion.hashtags}</p>
                   <ul className="flex flex-wrap justify-center">
-                    {TRANSPORTS.map((transport, index) => (
+                    {/* {TRANSPORTS.map((transport, index) => (
                       <Tooltip key={index} text={transport.name}>
                         {transport.icon({
                           width: 25,
@@ -73,7 +68,7 @@ export const Companions = () => {
                           } my-1 mx-2`,
                         })}
                       </Tooltip>
-                    ))}
+                    ))} */}
                   </ul>
                 </div>
               </li>
